@@ -1,0 +1,5 @@
+<!--
+ pom.xml placeholder
+ - Add project coordinates, dependencies (e.g., gson), build plugins, and packaging details here if using Maven.
+ - Example dependency to add: com.google.code.gson:gson:2.10.1
+-->
