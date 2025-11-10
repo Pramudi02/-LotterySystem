@@ -16,6 +16,9 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.HashMap;
 
+// Note: This HTTP server now serves as a coordination layer.
+// Most user operations (login, buy tickets, check results) are handled client-side with Firebase.
+// Admin operations and legacy support remain here for backward compatibility.
 public class HttpServerModule {
     private HttpServer server;
     private DataManager dataManager;
@@ -46,6 +49,7 @@ public class HttpServerModule {
         server.setExecutor(null);
         server.start();
         System.out.println("HTTP Server started on port " + port);
+        System.out.println("Note: Most operations now handled client-side with Firebase");
     }
 
     public void stop() {

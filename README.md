@@ -1,203 +1,242 @@
-# Lottery System
+# Lottery System - Firebase Edition
 
-A multi-client lottery system implemented in Java with TCP socket communication and JSON protocol.
+A complete online lottery system built with Firebase Authentication, Firestore database, and Java backend coordination layer.
 
-## Features
+## 🎯 Features
 
-- **Server**: Multi-threaded TCP server handling multiple client connections
-- **User Client**: GUI application for users to login, buy tickets, and check results
-- **Admin Client**: GUI application for administrators to set winning numbers and manage lottery results
-- **Thread-safe**: Concurrent data structures for handling multiple users
-- **JSON Protocol**: Communication using newline-terminated JSON messages
-- **Optional Features**: HTTP API and NIO server implementations
+- **Firebase Authentication**: Secure user registration and login
+- **Firestore Database**: Real-time data storage and synchronization
+- **Single-Page Application**: Modern web interface with client-side routing
+- **Admin Panel**: Complete lottery management system
+- **Real-time Results**: Live lottery results and ticket checking
+- **Java Backend**: Coordination layer for admin operations
 
-## Prerequisites
+## 🚀 Quick Start
 
-- Java 11 or higher
-- Maven 3.6 or higher
-- PowerShell execution policy allowing script execution (run `Set-ExecutionPolicy RemoteSigned` as administrator if needed)
+### Prerequisites
 
-## Quick Start
+- **Java 11+** (for backend server)
+- **Maven** (for building Java project)
+- **Firebase Project** (with Authentication and Firestore enabled)
+- **Web Browser** (Chrome, Firefox, Safari, Edge)
 
-### 1. Compile the Project
+### Step 1: Firebase Setup
+
+1. **Create Firebase Project**:
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project called "lotterysystem"
+   - Enable **Authentication** with Email/Password provider
+   - Enable **Firestore Database**
+
+2. **Configure Firebase**:
+   - Run the setup script: `.\setup-firebase.ps1`
+   - This will deploy Firestore security rules and guide you through manual setup
+
+3. **Create Admin User**:
+   - In Firestore, create a user document with admin privileges:
+     ```
+     Collection: users
+     Document ID: [your-firebase-user-id]
+     Fields:
+       - email: "admin@example.com"
+       - displayName: "Admin"
+       - balance: 100
+       - isAdmin: true
+     ```
+
+### Step 2: Backend Setup
+
+1. **Build the Java Server**:
+   ```powershell
+   mvn clean compile
+   ```
+
+2. **Start the Server**:
+   ```powershell
+   .\run-server.ps1
+   ```
+   - Server runs on port 8080 (HTTP API)
+   - Legacy TCP server on port 5000
+
+### Step 3: Frontend Setup
+
+1. **Serve the Frontend**:
+   ```powershell
+   cd frontend
+   python -m http.server 3000
+   ```
+
+2. **Open in Browser**:
+   - Navigate to: `http://localhost:3000`
+   - Or run: `.\open-web.ps1`
+
+## 🎮 How to Use
+
+### For Players
+
+1. **Sign Up**: Create an account with email, password, and display name
+2. **Sign In**: Log in with your credentials
+3. **Buy Tickets**: Purchase lottery tickets ($10 each, 5 random numbers)
+4. **Check Results**: View your tickets and see if you won
+5. **Balance Management**: Track your account balance
+
+### For Admins
+
+1. **Admin Login**: Sign in with an admin account (isAdmin: true in Firestore)
+2. **Set Winning Number**: Choose the winning number (1-100)
+3. **View All Tickets**: See all purchased tickets
+4. **View All Users**: Manage user accounts
+5. **Monitor Results**: Track lottery outcomes
+
+## 🏗️ Architecture
+
+```
+Frontend (SPA)
+├── index.html          # Single-page application with routing
+├── firebase-config.js  # Firebase integration
+└── styles.css          # Modern UI styles
+
+Backend (Java)
+├── HttpServerModule.java  # REST API server (port 8080)
+├── DataManager.java       # Data coordination layer
+└── Legacy TCP server      # Port 5000 (backward compatibility)
+
+Database (Firebase)
+├── Authentication         # User management
+├── Firestore              # Real-time data storage
+└── Security Rules         # Access control
+```
+
+## 🔧 API Endpoints
+
+### Authentication (Firebase)
+- User registration and login handled client-side
+- Real-time auth state management
+
+### Database Operations (Firestore)
+- User profiles and balances
+- Ticket purchases and storage
+- Lottery results and winning numbers
+
+### Admin Operations (Java Backend)
+- `GET /health` - Server health check
+- `POST /admin-login` - Admin authentication
+- `POST /set-winner` - Set winning number
+- `GET /view-tickets` - Get all tickets
+- `GET /announce-results` - Refresh results
+
+## 🎨 Frontend Pages
+
+1. **Authentication Page**: Login/Signup forms
+2. **Dashboard**: Main navigation hub
+3. **Play Lottery**: Buy tickets interface
+4. **My Results**: View tickets and winnings
+5. **Admin Panel**: Complete management interface
+
+## 🔒 Security
+
+- **Firebase Authentication**: Secure user authentication
+- **Firestore Rules**: Granular access control
+- **Admin Verification**: Server-side admin privilege checking
+- **Input Validation**: Client and server-side validation
+
+## 🚀 Deployment
+
+### Production Deployment
+
+1. **Firebase Hosting**:
+   ```bash
+   firebase init hosting
+   firebase deploy --only hosting
+   ```
+
+2. **Backend Deployment**:
+   - Deploy Java application to cloud service (Heroku, AWS, etc.)
+   - Update Firebase config with production URLs
+
+3. **Environment Variables**:
+   - Set production Firebase config
+   - Configure CORS for production domain
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Firebase Connection Issues**:
+   - Check Firebase project configuration
+   - Verify API keys and project IDs
+   - Ensure Firestore rules are deployed
+
+2. **Authentication Problems**:
+   - Enable Email/Password in Firebase Console
+   - Check user document structure in Firestore
+
+3. **Server Connection Issues**:
+   - Verify Java server is running on port 8080
+   - Check Maven compilation succeeded
+   - Ensure firewall allows connections
+
+4. **Frontend Loading Issues**:
+   - Verify Python HTTP server is running on port 3000
+   - Check browser console for JavaScript errors
+   - Ensure all Firebase modules are loading
+
+### Debug Commands
 
 ```powershell
-mvn clean compile
+# Check server health
+curl http://localhost:8080/health
+
+# Test Firebase connection
+# Open browser dev tools and check network tab
+
+# View server logs
+# Server output visible in terminal when running
 ```
 
-### 2. Run the Server
+## 📝 Development
 
-Use the provided PowerShell script:
+### Adding New Features
+
+1. **Frontend Changes**:
+   - Modify `index.html` for new pages/routes
+   - Update `firebase-config.js` for new Firebase operations
+   - Add styles to `styles.css`
+
+2. **Backend Changes**:
+   - Add new endpoints in `HttpServerModule.java`
+   - Update `DataManager.java` for data operations
+   - Test with Postman or curl
+
+3. **Database Changes**:
+   - Update Firestore security rules
+   - Modify data structures in Firebase console
+
+### Testing
 
 ```powershell
-.\run-server.ps1
-```
-
-Or run manually:
-```powershell
-mvn exec:java
-```
-
-The server will start on port 5000.
-
-### 3. Run the User Client
-
-In a new PowerShell window:
-
-```powershell
-.\run-client.ps1
-```
-
-Or run manually:
-```powershell
-java -cp ".;target/classes;lib/gson-2.10.1.jar" client.UserClientGUI
-```
-
-### 4. Web Frontend (Alternative to Desktop Clients)
-
-Open the web interface in your browser:
-
-```powershell
-# Open the main page
-start frontend/index.html
-```
-
-Or manually open `frontend/index.html` in your web browser.
-
-**Note**: The server automatically starts an HTTP API on port 8080 for the web frontend.
-
-## Usage
-
-### Desktop Clients
-
-### User Client
-1. Enter server host (default: 127.0.0.1) and port (default: 5000)
-2. Enter username and click "Connect"
-3. Click "Login" to authenticate
-4. Click "Buy Ticket" to purchase a lottery ticket (costs 10 units)
-5. Click "Check Results" to see if you won
-
-### Admin Client
-1. Enter server host (default: 127.0.0.1) and port (default: 5000)
-2. Enter admin password (default: admin123) and click "Connect"
-3. Enter a winning number and click "Set Winning Number"
-4. Click "View Tickets" to see all purchased tickets
-### Web Frontend
-
-#### User Client
-1. Open `frontend/index.html` in your web browser
-2. Click "User Client" to access the user interface
-3. Enter server host (default: 127.0.0.1) and port (default: 8080)
-4. Click "Connect" to establish connection
-5. Enter username and click "Login"
-6. Click "Buy Ticket" to purchase lottery tickets (costs 10 units each)
-7. Click "Check Results" to view your tickets and see if you won
-
-#### Admin Client
-1. Open `frontend/index.html` in your web browser
-2. Click "Admin Client" to access the admin interface
-3. Enter server host (default: 127.0.0.1) and port (default: 8080)
-4. Click "Connect" to establish connection
-5. Enter admin password (default: admin123) and click "Login as Admin"
-6. Set a winning number using "Set Winning Number"
-7. View all tickets using "View All Tickets"
-8. Announce results to all users using "Announce Results"
-
-## Architecture
-
-### Server Components
-- `LotteryServer`: Main server class with thread pool
-- `ClientHandler`: Handles individual client connections
-- `DataManager`: Thread-safe data storage and business logic
-
-### Client Components
-- `UserClientGUI`: Swing-based user interface
-- `AdminClientGUI`: Swing-based admin interface
-
-### Protocol
-- `Request`: Client request messages
-- `Response`: Server response messages
-- `MessageParser`: JSON serialization/deserialization
-
-### Models
-- `User`: User account information
-- `Ticket`: Lottery ticket data
-- `LotteryResult`: Draw results and prizes
-
-## Optional Features
-
-### HTTP API Server
-Run the HTTP server for REST API access:
-
-```java
-java -cp ".;target/classes;lib/gson-2.10.1.jar" optional.HttpServerModule
-```
-
-API Endpoints:
-- `GET /results` - Get lottery results
-- `GET /tickets` - Get all tickets
-
-### NIO Server
-Run the NIO-based server for high-performance:
-
-```java
-java -cp ".;target/classes;lib/gson-2.10.1.jar" optional.NIOServer
-```
-
-## Building
-
-### Create JAR
-```powershell
-mvn clean package
-```
-
-### Run Tests
-```powershell
+# Run Java tests
 mvn test
+
+# Manual testing
+# 1. Start server: .\run-server.ps1
+# 2. Serve frontend: cd frontend; python -m http.server 3000
+# 3. Open http://localhost:3000
+# 4. Test all user flows
 ```
 
-## Project Structure
+## 📄 License
 
-```
-src/
-├── server/
-│   ├── LotteryServer.java
-│   ├── ClientHandler.java
-│   └── DataManager.java
-├── client/
-│   ├── UserClientGUI.java
-│   └── AdminClientGUI.java
-├── protocol/
-│   ├── Request.java
-│   ├── Response.java
-│   └── MessageParser.java
-├── model/
-│   ├── User.java
-│   ├── Ticket.java
-│   └── LotteryResult.java
-└── optional/
-    ├── HttpServerModule.java
-    ├── NIOServer.java
-    └── FileLogger.java
-frontend/
-├── index.html
-├── user-client.html
-├── admin-client.html
-├── styles.css
-├── client.js
-└── admin.js
-lib/
-└── gson-2.10.1.jar
-docs/
-├── ProjectReport.pdf
-└── UserManual.pdf
-```
+This project is for educational purposes. Modify and distribute as needed.
 
-## Dependencies
+## 🤝 Contributing
 
-- Gson 2.10.1 - JSON processing
-- Java Swing - GUI components
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-## License
+---
 
-This project is for educational purposes.
+**Happy Lottering! 🎰**

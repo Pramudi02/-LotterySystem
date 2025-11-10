@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+// Note: This DataManager now serves as a coordination layer.
+// Most data operations are handled client-side with Firebase/Firestore.
+// This class maintains minimal state for server-side coordination.
 public class DataManager {
     private ConcurrentHashMap<String, User> users;
     private ConcurrentHashMap<Integer, Ticket> tickets;
@@ -20,6 +23,7 @@ public class DataManager {
         winningNumber = null;
     }
 
+    // Legacy methods for backward compatibility with existing TCP clients
     public void loginUser(String username, double initialBalance) {
         users.putIfAbsent(username, new User(username, initialBalance));
     }
@@ -28,6 +32,8 @@ public class DataManager {
         users.putIfAbsent(username, new User(username, 100.0)); // Start with 100 balance
     }
 
+    // Note: buyTicket and other data operations are now handled client-side with Firebase
+    // These methods remain for legacy TCP client support
     public int[] buyTicket(String username) {
         User user = users.get(username);
         if (user == null || user.getBalance() < 10.0) return null;
@@ -87,6 +93,7 @@ public class DataManager {
         return winningNumber != null ? winningNumber : 0;
     }
 
+    // Legacy JSON methods for backward compatibility
     public String getAllTicketsJson() {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;
@@ -104,8 +111,9 @@ public class DataManager {
     }
 
     public void announceResults() {
-        // In a real implementation, broadcast to all connected clients
-        System.out.println("Results announced to all users");
+        // In Firebase implementation, results are automatically visible to all clients
+        // This method can be used for server-side notifications if needed
+        System.out.println("Results announced to all users via Firebase");
     }
 
     public String getUserTicketsJson(String username) {
