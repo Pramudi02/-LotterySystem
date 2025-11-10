@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery System - Modern</title>
+    <link rel="stylesheet" href="app-styles-new.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Authentication Page -->
+    <div id="authPage" class="container">
+        <div class="auth-split-container">
+            <!-- Left Side - Login Form -->
+            <div class="auth-left">
+                <div class="auth-form-wrapper">
+                    <div class="auth-header">
+                        <div class="logo-small">
+                            <img src="assets/logo2.png" alt="Lottery Logo">
+                        </div>
+                    </div>
+
+                    <div class="auth-tabs">
+                        <button class="tab-btn active" id="signinTab" onclick="switchAuthTab('signin', this)">
+                            Sign In
+                        </button>
+                        <button class="tab-btn" id="signupTab" onclick="switchAuthTab('signup', this)">
+                            Sign Up
+                        </button>
+                    </div>
+
+                    <!-- Sign In Form -->
+                    <form id="signinForm" class="auth-form active" onsubmit="handleSignIn(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="signinEmail" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="signinPassword" required placeholder="Enter your password">
+                                <button type="button" class="password-toggle" onclick="togglePassword('signinPassword')">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary btn-full">
+                            Log In
+                        </button>
+                        
+                    </form>
+
+                    <!-- Sign Up Form -->
+                    <form id="signupForm" class="auth-form" onsubmit="handleSignUp(event)">
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" id="signupName" required placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="signupEmail" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="signupPassword" required placeholder="Create password (min 6 chars)">
+                                <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary btn-full">
+                            Create Account
+                        </button>
+                        
+                    </form>
+
+                    <div id="authMessage" class="auth-message"></div>
+                    
+                    <div class="signup-prompt" id="signupPrompt">
+                        Don't have account? <a href="#" onclick="switchAuthTab('signup', document.getElementById('signupTab')); return false;">Sign up</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Image/Gradient -->
+            <div class="auth-right">
+                <div class="auth-right-overlay"></div>
+                <div class="auth-right-content">
+                    <div class="feature-icon">
+                        <i data-lucide="trophy"></i>
+                    </div>
+                    <h2>Win Big with Our Lottery System</h2>
+                    <p>Join thousands of winners and try your luck today!</p>
+                    <div class="feature-stats">
+                        <div class="stat-item">
+                            <i data-lucide="users"></i>
+                            <span>10,000+ Players</span>
+                        </div>
+                        <div class="stat-item">
+                            <i data-lucide="trophy"></i>
+                            <span>$1M+ Won</span>
+                        </div>
+                        <div class="stat-item">
+                            <i data-lucide="shield-check"></i>
+                            <span>100% Secure</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="container" style="display: none;">
+        <!-- Navigation Header -->
+        <div class="nav-header">
+            <div class="nav-brand">
+                <div class="nav-logo">
+                    <img src="assets/logo2.png" alt="Lottery Logo">
+                </div>
+            </div>
+            <div class="nav-actions">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-email" id="userEmail">user@email.com</div>
+                        <div class="user-balance">
+                            <i data-lucide="wallet"></i>
+                            <span id="userBalance">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <div class="nav-menu">
+            <button class="nav-item active" onclick="showPage('dashboard')">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="showPage('play')">
+                <i data-lucide="ticket"></i>
+                <span>Play Lottery</span>
+            </button>
+            <button class="nav-item" onclick="showPage('results')">
+                <i data-lucide="trophy"></i>
+                <span>Results</span>
+            </button>
+            <button class="nav-item" id="adminNavBtn" style="display: none;" onclick="showPage('admin')">
+                <i data-lucide="shield"></i>
+                <span>Admin</span>
+            </button>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="page-content active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i data-lucide="wallet"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Current Balance</h3>
+                        <div class="stat-value" id="dashBalance">$0.00</div>
+                    </div>
+                    <div class="stat-footer">
+                        <i data-lucide="trending-up"></i>
+                        <span>Available for tickets</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i data-lucide="ticket"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3>My Tickets</h3>
+                        <div class="stat-value" id="totalTickets">0</div>
+                    </div>
+                    <div class="stat-footer">
+                        <i data-lucide="activity"></i>
+                        <span>Total purchased</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i data-lucide="trophy"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Winnings</h3>
+                        <div class="stat-value" id="totalWinnings">$0.00</div>
+                    </div>
+                    <div class="stat-footer">
+                        <i data-lucide="sparkles"></i>
+                        <span>Lifetime earnings</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Play Lottery Content -->
+        <div id="playContent" class="page-content">
+            <div class="play-container">
+                <div class="play-card">
+                    <div class="play-header">
+                        
+                        <h2>Play Lottery</h2>
+                        <p>Each ticket gives you 5 random numbers (1-100)</p>
+                    </div>
+
+                    <div class="price-info">
+                        <div class="price-label">
+                            <i data-lucide="tag"></i>
+                            <span>Ticket Price</span>
+                        </div>
+                        <div class="price-amount">$10.00</div>
+                    </div>
+
+                    <button class="btn-buy" id="buyTicketBtn" onclick="buyTicket()">
+                        <i data-lucide="shopping-cart"></i>
+                        <span>Buy Ticket</span>
+                    </button>
+
+                    <div id="newTicketDisplay" class="tickets-section" style="display: none;">
+                        <div class="section-header">
+                            <i data-lucide="check-circle"></i>
+                            <h3>Your New Ticket</h3>
+                        </div>
+                        <div id="newTicketNumbers" class="ticket-numbers"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Content -->
+        <div id="resultsContent" class="page-content">
+            <div class="results-container">
+                <div class="winning-section">
+                    <div class="winning-icon">
+                        <i data-lucide="trophy"></i>
+                    </div>
+                    <h2>Winning Number</h2>
+                    <div id="winningNumberDisplay" class="winning-number-display">?</div>
+                    <div id="noWinnerMsg" class="no-winner-message">
+                        <i data-lucide="info"></i>
+                        <span>No winning number set yet</span>
+                    </div>
+                </div>
+
+                <div class="tickets-section">
+                    <div class="section-header">
+                        <i data-lucide="list"></i>
+                        <h3>My Tickets</h3>
+                    </div>
+                    <div id="ticketsGrid" class="tickets-grid">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i data-lucide="inbox"></i>
+                            </div>
+                            <h3>No Tickets Yet</h3>
+                            <p>Purchase tickets to see them here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Content -->
+        <div id="adminContent" class="page-content">
+            <div class="admin-container">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <i data-lucide="target"></i>
+                            <h3>Set Winning Number</h3>
+                        </div>
+                        <div class="winner-form">
+                            <div class="winner-input-group">
+                                <input type="number" id="winningNumberInput" min="1" max="100" placeholder="Enter number (1-100)">
+                                <button class="btn-set-winner" onclick="setWinningNumber()">
+                                    <i data-lucide="check"></i>
+                                    <span>Set Winner</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <i data-lucide="ticket"></i>
+                            <h3>All Tickets</h3>
+                        </div>
+                        <button class="btn-primary" onclick="loadAllTickets()">
+                            <i data-lucide="refresh-cw"></i>
+                            <span>Load Tickets</span>
+                        </button>
+                        <div id="allTicketsContainer" class="table-container" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+
+                <div class="admin-card" style="margin-top: 2rem;">
+                    <div class="admin-card-header">
+                        <i data-lucide="users"></i>
+                        <h3>All Users</h3>
+                    </div>
+                    <button class="btn-primary" onclick="loadAllUsers()">
+                        <i data-lucide="refresh-cw"></i>
+                        <span>Load Users</span>
+                    </button>
+                    <div id="allUsersContainer" class="table-container" style="margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Firebase Configuration and JavaScript -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWEtzjum1mcPN3e61XghXaNC9qum7vhDw",
+            authDomain: "lotterysystem-18963.firebaseapp.com",
+            projectId: "lotterysystem-18963",
+            storageBucket: "lotterysystem-18963.firebasestorage.app",
+            messagingSenderId: "41637006495",
+            appId: "1:41637006495:web:e7c9e6e3a57792bbc126aa",
+            measurementId: "G-HKLLXJNVHS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentUserData = null;
+
+        // Initialize Lucide icons when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+
+        // Auth State Listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData();
+                document.getElementById('authPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                showPage('dashboard');
+            } else {
+                currentUser = null;
+                currentUserData = null;
+                document.getElementById('authPage').style.display = 'flex';
+                document.getElementById('dashboardPage').style.display = 'none';
+            }
+            lucide.createIcons();
+        });
+
+        // Load User Data
+        async function loadUserData() {
+            try {
+                const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+                if (userDoc.exists()) {
+                    currentUserData = userDoc.data();
+                } else {
+                    currentUserData = {
+                        email: currentUser.email,
+                        displayName: currentUser.displayName || currentUser.email.split('@')[0],
+                        balance: 100.0,
+                        isAdmin: false,
+                        createdAt: Timestamp.now()
+                    };
+                    await setDoc(doc(db, "users", currentUser.uid), currentUserData);
+                }
+
+                updateUIWithUserData();
+            } catch (error) {
+                console.error("Error loading user data:", error);
+                showToast("Error loading user data", "error");
+            }
+        }
+
+        // Update UI with User Data
+        function updateUIWithUserData() {
+            const displayName = currentUserData.displayName || currentUser.email;
+            const balance = currentUserData.balance || 0;
+
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userBalance').textContent = `$${balance.toFixed(2)}`;
+            document.getElementById('dashBalance').textContent = `$${balance.toFixed(2)}`;
+
+            // Show/hide admin button
+            if (currentUserData.isAdmin) {
+                document.getElementById('adminNavBtn').style.display = 'flex';
+            }
+        }
+
+        // Navigation
+        window.showPage = function(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            // Show selected page
+            document.getElementById(`${pageName}Content`).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.textContent.toLowerCase().includes(pageName)) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Load page-specific data
+            if (pageName === 'results') loadResults();
+            if (pageName === 'dashboard') loadDashboardStats();
+
+            lucide.createIcons();
+        };
+
+        // Auth Tab Switching
+        window.switchAuthTab = function(tab, button) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+
+            button.classList.add('active');
+            document.getElementById(`${tab}Form`).classList.add('active');
+            document.getElementById('authMessage').textContent = '';
+            
+            // Update signup prompt visibility
+            const signupPrompt = document.getElementById('signupPrompt');
+            if (signupPrompt) {
+                signupPrompt.style.display = tab === 'signin' ? 'block' : 'none';
+            }
+            
+            lucide.createIcons();
+        };
+
+        // Toggle Password Visibility
+        window.togglePassword = function(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.parentElement.querySelector('.password-toggle i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            
+            lucide.createIcons();
+        };
+
+        // Sign In
+        window.handleSignIn = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('signinEmail').value;
+            const password = document.getElementById('signinPassword').value;
+
+            showLoading(true);
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast("Signed in successfully!", "success");
+            } catch (error) {
+                showAuthMessage(error.message, "error");
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Sign Up
+        window.handleSignUp = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (password.length < 6) {
+                showAuthMessage("Password must be at least 6 characters", "error");
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                await setDoc(doc(db, "users", userCredential.user.uid), {
+                    email: email,
+                    displayName: name,
+                    balance: 100.0,
+                    isAdmin: false,
+                    createdAt: Timestamp.now()
+                });
+
+                showToast("Account created successfully!", "success");
+            } catch (error) {
+                showAuthMessage(error.message, "error");
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                showToast("Signed out successfully", "success");
+            } catch (error) {
+                showToast("Error signing out", "error");
+            }
+        };
+
+        // Buy Ticket
+        window.buyTicket = async function() {
+            if (!currentUser) return;
+
+            const btn = document.getElementById('buyTicketBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader"></i><span>Processing...</span>';
+            lucide.createIcons();
+
+            try {
+                if (currentUserData.balance < 10) {
+                    showToast('Insufficient balance!', 'error');
+                    return;
+                }
+
+                const numbers = Array.from({length: 5}, () => Math.floor(Math.random() * 100) + 1);
+
+                await addDoc(collection(db, "tickets"), {
+                    userId: currentUser.uid,
+                    numbers: numbers,
+                    purchaseTime: Timestamp.now(),
+                    checked: false
+                });
+
+                const newBalance = currentUserData.balance - 10;
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    balance: newBalance
+                });
+
+                currentUserData.balance = newBalance;
+                updateUIWithUserData();
+
+                // Display new ticket
+                const display = document.getElementById('newTicketDisplay');
+                const numbersContainer = document.getElementById('newTicketNumbers');
+                numbersContainer.innerHTML = numbers.map(n => `<div class="number-ball">${n}</div>`).join('');
+                display.style.display = 'block';
+
+                showToast("Ticket purchased! Good luck!", "success");
+
+            } catch (error) {
+                console.error("Error buying ticket:", error);
+                showToast('Error purchasing ticket', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="shopping-cart"></i><span>Buy Ticket</span>';
+                lucide.createIcons();
+            }
+        };
+
+        // Load Dashboard Stats
+        async function loadDashboardStats() {
+            if (!currentUser) return;
+
+            try {
+                const q = query(collection(db, "tickets"), where("userId", "==", currentUser.uid));
+                const snapshot = await getDocs(q);
+                
+                document.getElementById('totalTickets').textContent = snapshot.size;
+
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+
+                let winnings = 0;
+                if (winningNumber) {
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.numbers.includes(winningNumber)) {
+                            winnings += 100;
+                        }
+                    });
+                }
+                
+                document.getElementById('totalWinnings').textContent = `$${winnings.toFixed(2)}`;
+
+            } catch (error) {
+                console.error("Error loading stats:", error);
+            }
+        }
+
+        // Load Results
+        window.loadResults = async function() {
+            if (!currentUser) return;
+
+            showLoading(true);
+            try {
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+                
+                if (winningNumber) {
+                    document.getElementById('winningNumberDisplay').textContent = winningNumber;
+                    document.getElementById('winningNumberDisplay').style.display = 'inline-flex';
+                    document.getElementById('noWinnerMsg').style.display = 'none';
+                } else {
+                    document.getElementById('winningNumberDisplay').style.display = 'none';
+                    document.getElementById('noWinnerMsg').style.display = 'flex';
+                }
+
+                const q = query(
+                    collection(db, "tickets"),
+                    where("userId", "==", currentUser.uid),
+                    orderBy("purchaseTime", "desc")
+                );
+                
+                const snapshot = await getDocs(q);
+                const tickets = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    tickets.push({
+                        id: doc.id,
+                        numbers: data.numbers,
+                        purchaseTime: data.purchaseTime.toDate(),
+                        won: winningNumber && data.numbers.includes(winningNumber)
+                    });
+                });
+
+                displayTickets(tickets, winningNumber);
+
+            } catch (error) {
+                console.error("Error loading results:", error);
+                showToast("Error loading results", "error");
+            } finally {
+                showLoading(false);
+                lucide.createIcons();
+            }
+        };
+
+        // Display Tickets
+        function displayTickets(tickets, winningNumber) {
+            const container = document.getElementById('ticketsGrid');
+            
+            if (tickets.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i data-lucide="inbox"></i>
+                        </div>
+                        <h3>No Tickets Yet</h3>
+                        <p>Purchase tickets to see them here</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = tickets.map(ticket => {
+                const statusClass = ticket.won ? 'won' : (winningNumber ? 'lost' : 'pending');
+                const statusText = ticket.won ? 'Winner!' : (winningNumber ? 'No Match' : 'Pending');
+                const statusIcon = ticket.won ? 'trophy' : (winningNumber ? 'x-circle' : 'clock');
+                
+                return `
+                    <div class="ticket-card">
+                        <div class="ticket-header">
+                            <span class="ticket-id">
+                                <i data-lucide="ticket"></i>
+                                ${ticket.id.substring(0, 8)}
+                            </span>
+                            <span class="ticket-date">${ticket.purchaseTime.toLocaleDateString()}</span>
+                        </div>
+                        <div class="ticket-numbers">
+                            ${ticket.numbers.map(n => {
+                                const matchClass = n === winningNumber ? 'match' : '';
+                                return `<div class="number-ball ${matchClass}">${n}</div>`;
+                            }).join('')}
+                        </div>
+                        <div class="ticket-status ${statusClass}">
+                            <i data-lucide="${statusIcon}"></i>
+                            ${statusText}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Admin: Set Winning Number
+        window.setWinningNumber = async function() {
+            if (!currentUserData?.isAdmin) {
+                showToast("Admin access required", "error");
+                return;
+            }
+
+            const input = document.getElementById('winningNumberInput');
+            const number = parseInt(input.value);
+
+            if (!number || number < 1 || number > 100) {
+                showToast('Please enter a number between 1 and 100', 'error');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                await setDoc(doc(db, "system", "lottery"), {
+                    winningNumber: number,
+                    setTime: Timestamp.now()
+                }, { merge: true });
+
+                showToast(`Winning number set to ${number}`, 'success');
+                input.value = '';
+
+            } catch (error) {
+                console.error("Error setting winning number:", error);
+                showToast('Error setting winning number', 'error');
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Admin: Load All Tickets
+        window.loadAllTickets = async function() {
+            if (!currentUserData?.isAdmin) return;
+
+            showLoading(true);
+            try {
+                const snapshot = await getDocs(collection(db, "tickets"));
+                const tickets = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    tickets.push({
+                        id: doc.id.substring(0, 8),
+                        userId: data.userId.substring(0, 8),
+                        numbers: data.numbers,
+                        time: data.purchaseTime.toDate()
+                    });
+                });
+
+                const container = document.getElementById('allTicketsContainer');
+                if (tickets.length === 0) {
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="inbox"></i> No tickets yet</p>';
+                } else {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>User ID</th>
+                                    <th>Numbers</th>
+                                    <th>Purchase Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tickets.map(t => `
+                                    <tr>
+                                        <td>${t.id}...</td>
+                                        <td>${t.userId}...</td>
+                                        <td>${t.numbers.join(', ')}</td>
+                                        <td>${t.time.toLocaleString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error loading tickets:", error);
+                showToast("Error loading tickets", "error");
+            } finally {
+                showLoading(false);
+                lucide.createIcons();
+            }
+        };
+
+        // Admin: Load All Users
+        window.loadAllUsers = async function() {
+            if (!currentUserData?.isAdmin) return;
+
+            showLoading(true);
+            try {
+                const snapshot = await getDocs(collection(db, "users"));
+                const users = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    users.push({
+                        email: data.email,
+                        name: data.displayName,
+                        balance: data.balance || 0,
+                        isAdmin: data.isAdmin || false
+                    });
+                });
+
+                const container = document.getElementById('allUsersContainer');
+                if (users.length === 0) {
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="inbox"></i> No users yet</p>';
+                } else {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Balance</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${users.map(u => `
+                                    <tr>
+                                        <td>${u.email}</td>
+                                        <td>${u.name}</td>
+                                        <td>$${u.balance.toFixed(2)}</td>
+                                        <td>${u.isAdmin ? '<i data-lucide="shield"></i> Admin' : 'User'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error loading users:", error);
+                showToast("Error loading users", "error");
+            } finally {
+                showLoading(false);
+                lucide.createIcons();
+            }
+        };
+
+        // Utility Functions
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        function showAuthMessage(message, type) {
+            const msgDiv = document.getElementById('authMessage');
+            msgDiv.textContent = message;
+            msgDiv.className = `auth-message ${type}`;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info'}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
