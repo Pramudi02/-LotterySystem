@@ -1,4 +1,4 @@
-package server;
+package src.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,12 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * TestServer
- * - Lightweight server used to test Member 2 client features locally.
- * - Supports simple JSON-line protocol for actions: login, buyTicket, checkResult
- * - This is a test helper and not a production server.
- */
 public class TestServer {
     private final int port;
     private final ExecutorService pool = Executors.newCachedThreadPool();
