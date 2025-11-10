@@ -220,14 +220,16 @@ Make sure you have these installed on your system:
 ```
 LotterySystem/
 ├── frontend/
-│   ├── modern-app.html          # Main application (use this)
+│   ├── modern-app.html          # Main application (PRIMARY)
 │   ├── app-styles-new.css       # Modern dark theme styles
 │   ├── admin-setup.html         # Admin privilege setup tool
-│   ├── assets/
-│   │   ├── logo2.png           # Application logo
-│   │   ├── wallpaper.jpeg      # Login page background
-│   │   └── mainwallpaper.jpg   # Main background image
-│   └── [legacy files]          # Old versions (not used)
+│   ├── admin.js                 # Admin client JavaScript (legacy)
+│   ├── client.js                # User client JavaScript (legacy)
+│   ├── firebase-config.js       # Firebase configuration module
+│   └── assets/
+│       ├── logo2.png           # Application logo
+│       ├── wallpaper.jpeg      # Login page background
+│       └── mainwallpaper.jpg   # Main background image
 ├── src/
 │   └── main/
 │       └── java/
@@ -237,6 +239,7 @@ LotterySystem/
 │               └── [other Java files]
 ├── pom.xml                      # Maven configuration
 ├── README.md                    # This file
+├── service.md                   # Network services documentation
 └── run-server.ps1              # PowerShell script to start server
 ```
 
