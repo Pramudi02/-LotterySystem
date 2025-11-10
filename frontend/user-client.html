@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery System - User Client</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lottery System</h1>
+            <p>Welcome to the Online Lottery</p>
+        </header>
+
+        <div class="connection-section">
+            <h2>Connection</h2>
+            <div class="form-group">
+                <label for="serverHost">Server Host:</label>
+                <input type="text" id="serverHost" value="127.0.0.1" placeholder="127.0.0.1">
+            </div>
+            <div class="form-group">
+                <label for="serverPort">Server Port:</label>
+                <input type="number" id="serverPort" value="8080" placeholder="8080">
+            </div>
+            <button id="connectBtn" class="btn btn-primary">Connect</button>
+            <div id="connectionStatus" class="status">Disconnected</div>
+        </div>
+
+        <div class="auth-section" id="authSection" style="display: none;">
+            <h2>Authentication</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <button id="loginBtn" class="btn btn-success">Login</button>
+            <div id="authStatus" class="status"></div>
+        </div>
+
+        <div class="user-section" id="userSection" style="display: none;">
+            <h2>User Dashboard</h2>
+            <div class="balance-info">
+                <h3>Account Balance: <span id="balance">0</span> units</h3>
+            </div>
+
+            <div class="ticket-section">
+                <h3>Buy Lottery Ticket</h3>
+                <p>Cost: 10 units per ticket</p>
+                <button id="buyTicketBtn" class="btn btn-warning">Buy Ticket</button>
+                <div id="ticketStatus" class="status"></div>
+            </div>
+
+            <div class="results-section">
+                <h3>Check Results</h3>
+                <button id="checkResultsBtn" class="btn btn-info">Check Results</button>
+                <div id="resultsStatus" class="status"></div>
+                <div id="resultsDisplay" class="results-display" style="display: none;">
+                    <h4>Your Results:</h4>
+                    <div id="userTickets"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="messages-section">
+            <h2>Messages</h2>
+            <div id="messages" class="messages-container"></div>
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+</html>

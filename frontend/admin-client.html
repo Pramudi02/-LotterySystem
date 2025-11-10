@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery System - Admin Client</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lottery System - Admin Panel</h1>
+            <p>Administrator Dashboard</p>
+        </header>
+
+        <div class="connection-section">
+            <h2>Connection</h2>
+            <div class="form-group">
+                <label for="serverHost">Server Host:</label>
+                <input type="text" id="serverHost" value="127.0.0.1" placeholder="127.0.0.1">
+            </div>
+            <div class="form-group">
+                <label for="serverPort">Server Port:</label>
+                <input type="number" id="serverPort" value="8080" placeholder="8080">
+            </div>
+            <button id="connectBtn" class="btn btn-primary">Connect</button>
+            <div id="connectionStatus" class="status">Disconnected</div>
+        </div>
+
+        <div class="auth-section" id="authSection" style="display: none;">
+            <h2>Admin Authentication</h2>
+            <div class="form-group">
+                <label for="adminPassword">Admin Password:</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button id="loginBtn" class="btn btn-success">Login as Admin</button>
+            <div id="authStatus" class="status"></div>
+        </div>
+
+        <div class="admin-section" id="adminSection" style="display: none;">
+            <h2>Admin Dashboard</h2>
+
+            <div class="set-winner-section">
+                <h3>Set Winning Number</h3>
+                <div class="form-group">
+                    <label for="winningNumber">Winning Number:</label>
+                    <input type="number" id="winningNumber" min="1" max="100" placeholder="Enter winning number">
+                </div>
+                <button id="setWinnerBtn" class="btn btn-danger">Set Winning Number</button>
+                <div id="setWinnerStatus" class="status"></div>
+            </div>
+
+            <div class="tickets-section">
+                <h3>All Tickets</h3>
+                <button id="viewTicketsBtn" class="btn btn-info">View All Tickets</button>
+                <div id="ticketsStatus" class="status"></div>
+                <div id="ticketsDisplay" class="tickets-display" style="display: none;">
+                    <table id="ticketsTable">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Username</th>
+                                <th>Numbers</th>
+                                <th>Purchase Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <h3>Lottery Results</h3>
+                <button id="announceResultsBtn" class="btn btn-warning">Announce Results</button>
+                <div id="announceStatus" class="status"></div>
+                <div id="currentWinner" class="winner-display" style="display: none;">
+                    <h4>Current Winning Number: <span id="winnerNumber"></span></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="messages-section">
+            <h2>Messages</h2>
+            <div id="messages" class="messages-container"></div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
