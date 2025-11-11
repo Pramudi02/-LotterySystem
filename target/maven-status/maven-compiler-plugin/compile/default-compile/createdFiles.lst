@@ -4,10 +4,11 @@ optional\HttpServerModule$HealthHandler.class
 optional\HttpServerModule$ViewTicketsHandler.class
 optional\HttpServerModule$ResultsHandler.class
 optional\HttpServerModule$TicketsHandler.class
-server\TestServer$Ticket.class
+src\server\TestServer.class
 protocol\Request.class
 optional\HttpServerModule.class
 optional\HttpServerModule$CheckResultsHandler.class
+optional\WebSocketServer.class
 model\Ticket.class
 protocol\Response.class
 server\DataManager.class
@@ -15,11 +16,11 @@ model\User.class
 optional\HttpServerModule$LoginHandler.class
 client\TestClientCLI.class
 client\AdminClientGUI.class
-server\TestServer.class
 protocol\MessageParser.class
 model\LotteryResult.class
 optional\NIOServer.class
 optional\HttpServerModule$AdminLoginHandler.class
+src\server\TestServer$Ticket.class
 client\UserClientGUI.class
 server\ClientHandler.class
 server\LotteryServer.class
