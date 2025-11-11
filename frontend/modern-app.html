@@ -263,6 +263,18 @@
                         <p>Each ticket gives you 5 random numbers (1-10)</p>
                     </div>
 
+                    <!-- Live Winning Number Display -->
+                    <div class="winning-number-section">
+                        <div class="winning-label">
+                            <i data-lucide="trophy"></i>
+                            <span>Current Winning Number</span>
+                        </div>
+                        <div id="playWinningNumber" class="play-winning-display">
+                            <span id="playWinningNumberValue">?</span>
+                        </div>
+                        <div id="playNoWinner" class="play-no-winner">Not set yet</div>
+                    </div>
+
                     <div class="price-info">
                         <div class="price-label">
                             <i data-lucide="tag"></i>
@@ -487,6 +499,7 @@
             // Load page-specific data
             if (pageName === 'results') loadResults();
             if (pageName === 'dashboard') loadDashboardStats();
+            if (pageName === 'play') loadPlayPageWinningNumber();
 
             lucide.createIcons();
         };
@@ -616,13 +629,37 @@
                 currentUserData.balance = newBalance;
                 updateUIWithUserData();
 
+                // Check if ticket has winning number
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+                
+                let hasWon = false;
+                if (winningNumber && numbers.includes(winningNumber)) {
+                    hasWon = true;
+                    // Award $100 prize
+                    const prizeBalance = currentUserData.balance + 100;
+                    await updateDoc(doc(db, "users", currentUser.uid), {
+                        balance: prizeBalance
+                    });
+                    currentUserData.balance = prizeBalance;
+                    updateUIWithUserData();
+                }
+
                 // Display new ticket
                 const display = document.getElementById('newTicketDisplay');
                 const numbersContainer = document.getElementById('newTicketNumbers');
-                numbersContainer.innerHTML = numbers.map(n => `<div class="number-ball">${n}</div>`).join('');
+                numbersContainer.innerHTML = numbers.map(n => {
+                    const isWinner = n === winningNumber;
+                    return `<div class="number-ball ${isWinner ? 'match' : ''}">${n}</div>`;
+                }).join('');
                 display.style.display = 'block';
 
-                showToast("Ticket purchased! Good luck!", "success");
+                if (hasWon) {
+                    showToast("🎉 WINNER! You matched the winning number and won $100!", "success");
+                    showWinnerCelebration(winningNumber, 100);
+                } else {
+                    showToast("Ticket purchased! Good luck!", "success");
+                }
 
             } catch (error) {
                 console.error("Error buying ticket:", error);
@@ -661,6 +698,33 @@
 
             } catch (error) {
                 console.error("Error loading stats:", error);
+            }
+        }
+
+        // Load Winning Number on Play Page
+        async function loadPlayPageWinningNumber() {
+            if (!currentUser) return;
+
+            try {
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+                
+                const valueEl = document.getElementById('playWinningNumberValue');
+                const displayEl = document.getElementById('playWinningNumber');
+                const noWinnerEl = document.getElementById('playNoWinner');
+                
+                if (winningNumber) {
+                    valueEl.textContent = winningNumber;
+                    displayEl.style.display = 'flex';
+                    noWinnerEl.style.display = 'none';
+                } else {
+                    displayEl.style.display = 'none';
+                    noWinnerEl.style.display = 'block';
+                }
+                
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error loading winning number:", error);
             }
         }
 
@@ -1002,9 +1066,24 @@
                     // Real-time winning number announcement
                     console.log('🎉 Winning number:', data.number);
                     showWinnerAnimation(data.number);
+                    
+                    // Update results page
                     document.getElementById('winningNumberDisplay').textContent = data.number;
                     document.getElementById('winningNumberDisplay').style.display = 'inline-flex';
                     document.getElementById('noWinnerMsg').style.display = 'none';
+                    
+                    // Update play page winning number
+                    const playValueEl = document.getElementById('playWinningNumberValue');
+                    const playDisplayEl = document.getElementById('playWinningNumber');
+                    const playNoWinnerEl = document.getElementById('playNoWinner');
+                    if (playValueEl) {
+                        playValueEl.textContent = data.number;
+                        playValueEl.classList.add('winner-pulse');
+                        setTimeout(() => playValueEl.classList.remove('winner-pulse'), 2000);
+                    }
+                    if (playDisplayEl) playDisplayEl.style.display = 'flex';
+                    if (playNoWinnerEl) playNoWinnerEl.style.display = 'none';
+                    
                     loadResults(); // Refresh results
                     break;
                     
