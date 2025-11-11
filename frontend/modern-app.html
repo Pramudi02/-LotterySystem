@@ -260,7 +260,7 @@
                     <div class="play-header">
                         
                         <h2>Play Lottery</h2>
-                        <p>Each ticket gives you 5 random numbers (1-100)</p>
+                        <p>Each ticket gives you 5 random numbers (1-10)</p>
                     </div>
 
                     <div class="price-info">
@@ -331,7 +331,7 @@
                         </div>
                         <div class="winner-form">
                             <div class="winner-input-group">
-                                <input type="number" id="winningNumberInput" min="1" max="100" placeholder="Enter number (1-100)">
+                                <input type="number" id="winningNumberInput" min="1" max="10" placeholder="Enter number (1-10)">
                                 <button class="btn-set-winner" onclick="setWinningNumber()">
                                     <i data-lucide="check"></i>
                                     <span>Set Winner</span>
@@ -599,7 +599,7 @@
                     return;
                 }
 
-                const numbers = Array.from({length: 5}, () => Math.floor(Math.random() * 100) + 1);
+                const numbers = Array.from({length: 5}, () => Math.floor(Math.random() * 10) + 1);
 
                 await addDoc(collection(db, "tickets"), {
                     userId: currentUser.uid,
@@ -771,8 +771,8 @@
             const input = document.getElementById('winningNumberInput');
             const number = parseInt(input.value);
 
-            if (!number || number < 1 || number > 100) {
-                showToast('Please enter a number between 1 and 100', 'error');
+            if (!number || number < 1 || number > 10) {
+                showToast('Please enter a number between 1 and 10', 'error');
                 return;
             }
 

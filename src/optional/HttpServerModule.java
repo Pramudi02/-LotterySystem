@@ -238,7 +238,7 @@ public class HttpServerModule {
                 Map<String, Object> requestData = messageParser.parseJsonObject(requestBody);
 
                 Integer winningNumber = ((Double) requestData.get("winningNumber")).intValue();
-                if (winningNumber == null || winningNumber < 1 || winningNumber > 100) {
+                if (winningNumber == null || winningNumber < 1 || winningNumber > 10) {
                     String response = "{\"success\":false,\"message\":\"Invalid winning number\"}";
                     sendJsonResponse(exchange, response);
                     return;

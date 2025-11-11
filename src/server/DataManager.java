@@ -39,10 +39,10 @@ public class DataManager {
         User user = users.get(username);
         if (user == null || user.getBalance() < 10.0) return null;
 
-        // Generate 5 random numbers between 1-100
+        // Generate 5 random numbers between 1-10
         int[] numbers = new int[5];
         for (int i = 0; i < 5; i++) {
-            numbers[i] = 1 + (int)(Math.random() * 100);
+            numbers[i] = 1 + (int)(Math.random() * 10);
         }
 
         int ticketId = ticketCounter.getAndIncrement();

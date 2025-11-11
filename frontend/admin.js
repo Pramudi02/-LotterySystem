@@ -125,8 +125,8 @@ class LotteryAdminClient {
         }
 
         const winningNumber = parseInt(document.getElementById('winningNumber').value);
-        if (!winningNumber || winningNumber < 1 || winningNumber > 100) {
-            this.setWinnerStatus.textContent = 'Please enter a valid winning number (1-100)';
+        if (!winningNumber || winningNumber < 1 || winningNumber > 10) {
+            this.setWinnerStatus.textContent = 'Please enter a valid winning number (1-10)';
             this.setWinnerStatus.className = 'status error';
             return;
         }
