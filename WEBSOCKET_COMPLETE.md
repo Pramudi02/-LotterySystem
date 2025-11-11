@@ -301,7 +301,7 @@ Read these for more details:
 
 ---
 
-## 🎊 Final Summary
+## ★ Final Summary
 
 ### **What You Have Now:**
 

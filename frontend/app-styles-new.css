@@ -994,59 +994,103 @@ input:focus {
 }
 
 .winning-number-section {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
-    border: 2px solid rgba(251, 191, 36, 0.3);
-    border-radius: 16px;
-    padding: 1.5rem;
+    background: linear-gradient(135deg, 
+        rgba(251, 191, 36, 0.15), 
+        rgba(245, 158, 11, 0.15));
+    border: 2px solid rgba(251, 191, 36, 0.4);
+    border-radius: 20px;
+    padding: 2rem;
     margin-bottom: 2rem;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(251, 191, 36, 0.2);
+}
+
+.winning-number-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+    animation: rotate-glow 10s linear infinite;
+}
+
+@keyframes rotate-glow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .winning-label {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     color: var(--accent-orange);
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
 }
 
 .winning-label svg {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5));
 }
 
 .play-winning-display {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--accent-orange), var(--orange-secondary));
-    width: 80px;
-    height: 80px;
+    background: linear-gradient(135deg, 
+        var(--accent-orange) 0%, 
+        var(--orange-secondary) 100%);
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    font-size: 2.5rem;
-    font-weight: 800;
+    font-size: 3rem;
+    font-weight: 900;
     color: white;
-    box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+    box-shadow: 
+        0 10px 40px rgba(251, 191, 36, 0.5),
+        inset 0 -5px 20px rgba(0, 0, 0, 0.2),
+        inset 0 5px 20px rgba(255, 255, 255, 0.2);
     animation: pulse-glow 2s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+    border: 4px solid rgba(255, 255, 255, 0.3);
 }
 
 .play-no-winner {
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-style: italic;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
 }
 
 @keyframes pulse-glow {
     0%, 100% {
-        box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+        box-shadow: 
+            0 10px 40px rgba(251, 191, 36, 0.5),
+            inset 0 -5px 20px rgba(0, 0, 0, 0.2),
+            inset 0 5px 20px rgba(255, 255, 255, 0.2);
         transform: scale(1);
     }
     50% {
-        box-shadow: 0 12px 35px rgba(251, 191, 36, 0.6);
-        transform: scale(1.05);
+        box-shadow: 
+            0 15px 60px rgba(251, 191, 36, 0.7),
+            0 0 40px rgba(251, 191, 36, 0.4),
+            inset 0 -5px 20px rgba(0, 0, 0, 0.2),
+            inset 0 5px 20px rgba(255, 255, 255, 0.2);
+        transform: scale(1.08);
     }
 }
 
@@ -1137,6 +1181,101 @@ input:focus {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-primary);
+}
+
+/* Ticket Result Messages */
+.ticket-result-message {
+    margin-top: 1.5rem;
+}
+
+.result-win,
+.result-lose {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+    animation: slideInUp 0.5s ease-out;
+}
+
+.result-win {
+    background: linear-gradient(135deg, 
+        rgba(16, 185, 129, 0.2), 
+        rgba(5, 150, 105, 0.2));
+    border: 2px solid rgba(16, 185, 129, 0.5);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.result-win svg {
+    width: 48px;
+    height: 48px;
+    color: var(--success);
+    filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.5));
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.result-lose {
+    background: linear-gradient(135deg, 
+        rgba(239, 68, 68, 0.15), 
+        rgba(220, 38, 38, 0.15));
+    border: 2px solid rgba(239, 68, 68, 0.4);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+}
+
+.result-lose svg {
+    width: 40px;
+    height: 40px;
+    color: #ef4444;
+    opacity: 0.9;
+}
+
+.result-win div,
+.result-lose div {
+    flex: 1;
+    text-align: left;
+}
+
+.result-win strong {
+    display: block;
+    font-size: 1.3rem;
+    color: var(--success);
+    margin-bottom: 0.5rem;
+    font-weight: 800;
+}
+
+.result-lose strong {
+    display: block;
+    font-size: 1.2rem;
+    color: #ef4444;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.result-win p,
+.result-lose p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 .tickets-grid {
@@ -1906,6 +2045,45 @@ tbody tr:last-child td {
     
     .live-stats-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .winning-number-section {
+        padding: 1.5rem;
+    }
+    
+    .play-winning-display {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+    }
+    
+    .winning-label {
+        font-size: 1rem;
+    }
+    
+    .result-win,
+    .result-lose {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.25rem;
+    }
+    
+    .result-win svg {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .result-lose svg {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .result-win strong {
+        font-size: 1.1rem;
+    }
+    
+    .result-lose strong {
+        font-size: 1rem;
     }
     
     .celebration-content {

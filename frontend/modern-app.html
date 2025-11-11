@@ -294,6 +294,7 @@
                             <h3>Your New Ticket</h3>
                         </div>
                         <div id="newTicketNumbers" class="ticket-numbers"></div>
+                        <div id="ticketResultMessage" class="ticket-result-message"></div>
                     </div>
                 </div>
             </div>
@@ -648,6 +649,8 @@
                 // Display new ticket
                 const display = document.getElementById('newTicketDisplay');
                 const numbersContainer = document.getElementById('newTicketNumbers');
+                const resultMessage = document.getElementById('ticketResultMessage');
+                
                 numbersContainer.innerHTML = numbers.map(n => {
                     const isWinner = n === winningNumber;
                     return `<div class="number-ball ${isWinner ? 'match' : ''}">${n}</div>`;
@@ -655,11 +658,34 @@
                 display.style.display = 'block';
 
                 if (hasWon) {
+                    resultMessage.innerHTML = `
+                        <div class="result-win">
+                            <i data-lucide="trophy"></i>
+                            <div>
+                                <strong>🎉 WINNER! 🎉</strong>
+                                <p>You matched the winning number and won $100!</p>
+                            </div>
+                        </div>
+                    `;
                     showToast("🎉 WINNER! You matched the winning number and won $100!", "success");
                     showWinnerCelebration(winningNumber, 100);
+                } else if (winningNumber) {
+                    resultMessage.innerHTML = `
+                        <div class="result-lose">
+                            <i data-lucide="x-circle"></i>
+                            <div>
+                                <strong>Better luck next time!</strong>
+                                <p>No matching numbers. Try again!</p>
+                            </div>
+                        </div>
+                    `;
+                    showToast("Ticket purchased! Good luck!", "success");
                 } else {
+                    resultMessage.innerHTML = '';
                     showToast("Ticket purchased! Good luck!", "success");
                 }
+                
+                lucide.createIcons();
 
             } catch (error) {
                 console.error("Error buying ticket:", error);
@@ -1169,7 +1195,7 @@
             celebration.innerHTML = `
                 <div class="celebration-content">
                     <i data-lucide="trophy"></i>
-                    <h2>🎊 CONGRATULATIONS! 🎊</h2>
+                    <h2>★ CONGRATULATIONS! ★</h2>
                     <p>You matched the winning number <strong>${number}</strong>!</p>
                     <div class="prize-amount">$${prize.toFixed(2)}</div>
                     <button onclick="this.parentElement.parentElement.remove()">Claim Prize</button>
