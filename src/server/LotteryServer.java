@@ -42,7 +42,7 @@ public class LotteryServer {
         System.out.println("Lottery Server started on port " + port);
         System.out.println("HTTP API Server started on port 8080");
         System.out.println("=====================================");
-        System.out.println("🎰 Lottery System Ready!");
+        System.out.println("  Lottery System Ready!");
         System.out.println("=====================================");
 
         while (running) {
