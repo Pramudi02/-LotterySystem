@@ -242,7 +242,7 @@
                         <i data-lucide="dollar-sign"></i>
                         <div class="live-stat-info">
                             <span class="live-stat-label">Current Jackpot</span>
-                            <span class="live-stat-value" id="liveJackpot">$0.00</span>
+                            <span class="live-stat-value" id="liveJackpot">$100.00</span>
                         </div>
                     </div>
                 </div>
@@ -378,12 +378,12 @@
 
                     <div class="admin-card">
                         <div class="admin-card-header">
-                            <i data-lucide="ticket"></i>
-                            <h3>All Tickets</h3>
+                            <i data-lucide="award"></i>
+                            <h3>Winning Tickets Only</h3>
                         </div>
-                        <button class="btn-primary" onclick="loadAllTickets()">
+                        <button class="btn-primary" onclick="loadWinningTickets()">
                             <i data-lucide="refresh-cw"></i>
-                            <span>Load Tickets</span>
+                            <span>Load Winners</span>
                         </button>
                         <div id="allTicketsContainer" class="table-container" style="margin-top: 1rem;"></div>
                     </div>
@@ -524,6 +524,7 @@
             if (pageName === 'results') loadResults();
             if (pageName === 'dashboard') loadDashboardStats();
             if (pageName === 'play') loadPlayPageWinningNumber();
+            if (pageName === 'admin') loadAdminWinningNumber();
 
             lucide.createIcons();
         };
@@ -924,6 +925,113 @@
             }
         };
 
+        // Admin: Load Winning Tickets Only
+        window.loadWinningTickets = async function() {
+            if (!currentUserData?.isAdmin) return;
+
+            showLoading(true);
+            try {
+                // First get the current winning number
+                const lotteryDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = lotteryDoc.exists() ? lotteryDoc.data().winningNumber : null;
+
+                if (!winningNumber) {
+                    const container = document.getElementById('allTicketsContainer');
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="alert-circle"></i> No winning number set yet</p>';
+                    lucide.createIcons();
+                    showLoading(false);
+                    return;
+                }
+
+                // Get all tickets
+                const snapshot = await getDocs(collection(db, "tickets"));
+                const winningTickets = [];
+                
+                // Filter for winning tickets and get user details
+                for (const ticketDoc of snapshot.docs) {
+                    const data = ticketDoc.data();
+                    
+                    // Check if any of the ticket numbers match the winning number
+                    if (data.numbers && data.numbers.includes(winningNumber)) {
+                        // Get username from users collection
+                        const userDoc = await getDoc(doc(db, "users", data.userId));
+                        const username = userDoc.exists() ? userDoc.data().username : 'Unknown User';
+                        
+                        winningTickets.push({
+                            id: ticketDoc.id.substring(0, 8),
+                            username: username,
+                            userId: data.userId.substring(0, 8),
+                            numbers: data.numbers,
+                            time: data.purchaseTime.toDate(),
+                            winningNumber: winningNumber
+                        });
+                    }
+                }
+
+                // Sort by purchase time (newest first)
+                winningTickets.sort((a, b) => b.time - a.time);
+
+                const container = document.getElementById('allTicketsContainer');
+                if (winningTickets.length === 0) {
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="inbox"></i> No winning tickets yet</p>';
+                } else {
+                    container.innerHTML = `
+                        <div class="winning-ticket-stats">
+                            <p><strong>Current Winning Number:</strong> <span class="highlight-number">${winningNumber}</span></p>
+                            <p><strong>Total Winners:</strong> ${winningTickets.length}</p>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket Numbers</th>
+                                    <th>Purchase Time</th>
+                                    <th>Prize</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${winningTickets.map(t => `
+                                    <tr class="winner-row">
+                                        <td>
+                                            ${t.numbers.map(num => 
+                                                num === winningNumber 
+                                                ? `<span class="winning-number-highlight">${num}</span>`
+                                                : `<span class="ticket-number">${num}</span>`
+                                            ).join(' ')}
+                                        </td>
+                                        <td>${t.time.toLocaleString()}</td>
+                                        <td class="prize-amount">$100.00</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error loading winning tickets:", error);
+                showToast('Error loading winning tickets', 'error');
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Admin: Load current winning number display
+        window.loadAdminWinningNumber = async function() {
+            try {
+                const lotteryDoc = await getDoc(doc(db, "system", "lottery"));
+                if (lotteryDoc.exists()) {
+                    const winningNumber = lotteryDoc.data().winningNumber;
+                    const displayElement = document.querySelector('#adminCurrentWinningNumber .admin-winning-circle');
+                    if (displayElement) {
+                        displayElement.textContent = winningNumber || '--';
+                        displayElement.classList.add('has-winner');
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading admin winning number:", error);
+            }
+        };
+
         // Admin: Load All Tickets
         window.loadAllTickets = async function() {
             if (!currentUserData?.isAdmin) return;
@@ -1130,7 +1238,7 @@
                     
                 case 'WINNING_NUMBER':
                     // Real-time winning number announcement
-                    console.log(' Winning number:', data.number);
+                    console.log('🎉 Winning number:', data.number);
                     showWinnerAnimation(data.number);
                     
                     // Update results page
@@ -1149,6 +1257,13 @@
                     }
                     if (playDisplayEl) playDisplayEl.style.display = 'flex';
                     if (playNoWinnerEl) playNoWinnerEl.style.display = 'none';
+                    
+                    // Update admin page winning number
+                    const adminWinningCircle = document.querySelector('#adminCurrentWinningNumber .admin-winning-circle');
+                    if (adminWinningCircle) {
+                        adminWinningCircle.textContent = data.number;
+                        adminWinningCircle.classList.add('has-winner');
+                    }
                     
                     loadResults(); // Refresh results
                     break;
