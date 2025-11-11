@@ -255,46 +255,57 @@
 
         <!-- Play Lottery Content -->
         <div id="playContent" class="page-content">
-            <div class="play-container">
-                <div class="play-card">
-                    <div class="play-header">
-                        
-                        <h2>Play Lottery</h2>
-                        <p>Each ticket gives you 5 random numbers (1-10)</p>
-                    </div>
-
-                    <!-- Live Winning Number Display -->
-                    <div class="winning-number-section">
-                        <div class="winning-label">
+            <div class="split-layout">
+                <!-- Left Side: Winning Number -->
+                <div class="split-left">
+                    <div class="split-card">
+                        <div class="split-header">
                             <i data-lucide="trophy"></i>
-                            <span>Current Winning Number</span>
+                            <h2>Current Winning Number</h2>
                         </div>
-                        <div id="playWinningNumber" class="play-winning-display">
-                            <span id="playWinningNumberValue">?</span>
+                        <div class="winning-number-display-large">
+                            <div id="playWinningNumber" class="play-winning-display">
+                                <span id="playWinningNumberValue">?</span>
+                            </div>
+                            <div id="playNoWinner" class="play-no-winner">Not set yet</div>
                         </div>
-                        <div id="playNoWinner" class="play-no-winner">Not set yet</div>
+                        <div class="winning-info">
+                            <i data-lucide="info"></i>
+                            <p>Match this number to win $100!</p>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="price-info">
-                        <div class="price-label">
-                            <i data-lucide="tag"></i>
-                            <span>Ticket Price</span>
+                <!-- Right Side: Buy Ticket -->
+                <div class="split-right">
+                    <div class="split-card">
+                        <div class="split-header">
+                            <i data-lucide="ticket"></i>
+                            <h2>Buy Lottery Ticket</h2>
                         </div>
-                        <div class="price-amount">$10.00</div>
-                    </div>
-
-                    <button class="btn-buy" id="buyTicketBtn" onclick="buyTicket()">
-                        <i data-lucide="shopping-cart"></i>
-                        <span>Buy Ticket</span>
-                    </button>
-
-                    <div id="newTicketDisplay" class="tickets-section" style="display: none;">
-                        <div class="section-header">
-                            <i data-lucide="check-circle"></i>
-                            <h3>Your New Ticket</h3>
+                        <p class="ticket-description">Each ticket gives you 5 random numbers (1-10)</p>
+                        
+                        <div class="price-info">
+                            <div class="price-label">
+                                <i data-lucide="tag"></i>
+                                <span>Ticket Price</span>
+                            </div>
+                            <div class="price-amount">$10.00</div>
                         </div>
-                        <div id="newTicketNumbers" class="ticket-numbers"></div>
-                        <div id="ticketResultMessage" class="ticket-result-message"></div>
+
+                        <button class="btn-buy" id="buyTicketBtn" onclick="buyTicket()">
+                            <i data-lucide="shopping-cart"></i>
+                            <span>Buy Ticket</span>
+                        </button>
+
+                        <div id="newTicketDisplay" class="tickets-section" style="display: none;">
+                            <div class="section-header">
+                                <i data-lucide="check-circle"></i>
+                                <h3>Your New Ticket</h3>
+                            </div>
+                            <div id="newTicketNumbers" class="ticket-numbers"></div>
+                            <div id="ticketResultMessage" class="ticket-result-message"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -302,31 +313,43 @@
 
         <!-- Results Content -->
         <div id="resultsContent" class="page-content">
-            <div class="results-container">
-                <div class="winning-section">
-                    <div class="winning-icon">
-                        <i data-lucide="trophy"></i>
-                    </div>
-                    <h2>Winning Number</h2>
-                    <div id="winningNumberDisplay" class="winning-number-display">?</div>
-                    <div id="noWinnerMsg" class="no-winner-message">
-                        <i data-lucide="info"></i>
-                        <span>No winning number set yet</span>
+            <div class="split-layout">
+                <!-- Left Side: Winning Number -->
+                <div class="split-left Results-left">
+                    <div class="split-card">
+                        <div class="split-header">
+                            <i data-lucide="trophy"></i>
+                            <h2>Winning Number</h2>
+                        </div>
+                        <div class="winning-number-display-large">
+                            <div id="winningNumberDisplay" class="winning-number-display">?</div>
+                            <div id="noWinnerMsg" class="no-winner-message" style="margin-top: 1rem;">
+                                <i data-lucide="info"></i>
+                                <span>No winning number set yet</span>
+                            </div>
+                        </div>
+                        <div class="winning-info">
+                            <i data-lucide="sparkles"></i>
+                            <p>Check your tickets to see if you won!</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="tickets-section">
-                    <div class="section-header">
-                        <i data-lucide="list"></i>
-                        <h3>My Tickets</h3>
-                    </div>
-                    <div id="ticketsGrid" class="tickets-grid">
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <i data-lucide="inbox"></i>
+                <!-- Right Side: My Tickets -->
+                <div class="split-right">
+                    <div class="split-card">
+                        <div class="split-header">
+                            <i data-lucide="list"></i>
+                            <h2>My Tickets</h2>
+                        </div>
+                        <div id="ticketsGrid" class="tickets-list">
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i data-lucide="inbox"></i>
+                                </div>
+                                <h3>No Tickets Yet</h3>
+                                <p>Purchase tickets to see them here</p>
                             </div>
-                            <h3>No Tickets Yet</h3>
-                            <p>Purchase tickets to see them here</p>
                         </div>
                     </div>
                 </div>
@@ -662,12 +685,12 @@
                         <div class="result-win">
                             <i data-lucide="trophy"></i>
                             <div>
-                                <strong>🎉 WINNER! 🎉</strong>
+                                <strong> WINNER! </strong>
                                 <p>You matched the winning number and won $100!</p>
                             </div>
                         </div>
                     `;
-                    showToast("🎉 WINNER! You matched the winning number and won $100!", "success");
+                    showToast(" WINNER! You matched the winning number and won $100!", "success");
                     showWinnerCelebration(winningNumber, 100);
                 } else if (winningNumber) {
                     resultMessage.innerHTML = `
@@ -694,6 +717,13 @@
                 btn.disabled = false;
                 btn.innerHTML = '<i data-lucide="shopping-cart"></i><span>Buy Ticket</span>';
                 lucide.createIcons();
+                
+                // Refresh dashboard and results if active
+                loadDashboardStats();
+                const resultsContent = document.getElementById('resultsContent');
+                if (resultsContent && resultsContent.classList.contains('active')) {
+                    loadResults();
+                }
             }
         };
 
@@ -756,10 +786,14 @@
 
         // Load Results
         window.loadResults = async function() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.log('No current user, skipping loadResults');
+                return;
+            }
 
             showLoading(true);
             try {
+                // Get winning number
                 const systemDoc = await getDoc(doc(db, "system", "lottery"));
                 const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
                 
@@ -772,10 +806,10 @@
                     document.getElementById('noWinnerMsg').style.display = 'flex';
                 }
 
+                // Get user's tickets - simplified query without orderBy to avoid index issues
                 const q = query(
                     collection(db, "tickets"),
-                    where("userId", "==", currentUser.uid),
-                    orderBy("purchaseTime", "desc")
+                    where("userId", "==", currentUser.uid)
                 );
                 
                 const snapshot = await getDocs(q);
@@ -786,11 +820,15 @@
                     tickets.push({
                         id: doc.id,
                         numbers: data.numbers,
-                        purchaseTime: data.purchaseTime.toDate(),
+                        purchaseTime: data.purchaseTime ? data.purchaseTime.toDate() : new Date(),
                         won: winningNumber && data.numbers.includes(winningNumber)
                     });
                 });
 
+                // Sort tickets by purchase time (newest first)
+                tickets.sort((a, b) => b.purchaseTime - a.purchaseTime);
+
+                console.log(`Loaded ${tickets.length} tickets for user`);
                 displayTickets(tickets, winningNumber);
 
             } catch (error) {
@@ -805,6 +843,8 @@
         // Display Tickets
         function displayTickets(tickets, winningNumber) {
             const container = document.getElementById('ticketsGrid');
+            
+            console.log(`Displaying ${tickets.length} tickets, winning number: ${winningNumber}`);
             
             if (tickets.length === 0) {
                 container.innerHTML = `
@@ -1090,7 +1130,7 @@
                     
                 case 'WINNING_NUMBER':
                     // Real-time winning number announcement
-                    console.log('🎉 Winning number:', data.number);
+                    console.log(' Winning number:', data.number);
                     showWinnerAnimation(data.number);
                     
                     // Update results page
@@ -1129,6 +1169,12 @@
                     // Show notification when someone buys a ticket
                     if (data.username !== currentUser?.email) {
                         showToast(`🎫 ${data.username} just bought a ticket!`, 'info');
+                    }
+                    // Reload results and dashboard to show new tickets
+                    loadDashboardStats();
+                    const resultsContent = document.getElementById('resultsContent');
+                    if (resultsContent && resultsContent.classList.contains('active')) {
+                        loadResults();
                     }
                     break;
                     
@@ -1178,7 +1224,7 @@
         
         function showWinnerAnimation(number) {
             // Create confetti effect
-            showToast(`🎉 WINNING NUMBER ANNOUNCED: ${number}!`, 'success');
+            showToast(` WINNING NUMBER ANNOUNCED: ${number}!`, 'success');
             
             // Add visual pulse animation to winning number display
             const display = document.getElementById('winningNumberDisplay');

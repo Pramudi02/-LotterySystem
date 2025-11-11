@@ -941,6 +941,194 @@ input:focus {
     height: 16px;
 }
 
+/* ==========================================
+   SPLIT LAYOUT (50/50) - Play & Results Pages
+   ========================================== */
+
+.split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    height: calc(100vh - 200px);
+    min-height: 600px;
+}
+
+.split-left,
+.split-right {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.Results-left{
+    height: 65vh;
+
+}
+.split-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 24px;
+    padding: 2.5rem;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 60px var(--glass-shadow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.split-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.split-header svg {
+    width: 32px;
+    height: 32px;
+    color: var(--accent-orange);
+    filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.5));
+}
+
+.split-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-orange), var(--orange-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+/* Winning Number Display in Split Layout */
+.winning-number-display-large {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 2rem 0;
+}
+
+.winning-number-display-large .play-winning-display,
+.winning-number-display-large .winning-number-display {
+    width: 150px;
+    height: 150px;
+    font-size: 4rem;
+    background: linear-gradient(135deg, 
+        var(--accent-orange) 0%, 
+        var(--orange-secondary) 100%);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 900;
+    box-shadow: 
+        0 15px 50px rgba(251, 191, 36, 0.6),
+        0 0 60px rgba(251, 191, 36, 0.4),
+        inset 0 -8px 30px rgba(0, 0, 0, 0.3),
+        inset 0 8px 30px rgba(255, 255, 255, 0.2);
+    animation: pulse-glow-large 3s ease-in-out infinite;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes pulse-glow-large {
+    0%, 100% {
+        box-shadow: 
+            0 15px 50px rgba(251, 191, 36, 0.6),
+            0 0 60px rgba(251, 191, 36, 0.4),
+            inset 0 -8px 30px rgba(0, 0, 0, 0.3),
+            inset 0 8px 30px rgba(255, 255, 255, 0.2);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 
+            0 20px 70px rgba(251, 191, 36, 0.8),
+            0 0 80px rgba(251, 191, 36, 0.6),
+            inset 0 -8px 30px rgba(0, 0, 0, 0.3),
+            inset 0 8px 30px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+}
+
+.winning-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    padding: 1rem 1.5rem;
+    background: rgba(251, 191, 36, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.winning-info svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-orange);
+}
+
+.winning-info p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.ticket-description {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Tickets List (row by row) */
+.tickets-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.tickets-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tickets-list::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 10px;
+}
+
+.tickets-list::-webkit-scrollbar-thumb {
+    background: rgba(251, 191, 36, 0.5);
+    border-radius: 10px;
+}
+
+.tickets-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(251, 191, 36, 0.7);
+}
+
+.ticket-row {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.ticket-row:hover {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(251, 191, 36, 0.4);
+    transform: translateX(5px);
+}
+
 /* Play Lottery Page */
 .play-container {
     max-width: 800px;
