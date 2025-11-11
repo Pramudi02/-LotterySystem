@@ -2,6 +2,7 @@ package server;
 
 import model.User;
 import model.Ticket;
+import optional.WebSocketServer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,11 +51,46 @@ public class DataManager {
         user.setBalance(user.getBalance() - 10.0);
         user.addTicketId(ticketId);
 
+        // 🔴 WebSocket: Broadcast ticket purchase to all clients
+        try {
+            WebSocketServer.broadcastTicketPurchase(username, numbers);
+            WebSocketServer.broadcastTicketCount(tickets.size());
+            
+            // Calculate and broadcast live stats
+            double jackpot = tickets.size() * 10.0 * 0.5; // 50% to jackpot
+            WebSocketServer.broadcastLiveStats(tickets.size(), jackpot);
+            
+            // Notify admins of purchase
+            WebSocketServer.broadcastToAdmins("TICKET_PURCHASE", 
+                String.format("User %s purchased ticket #%d", username, ticketId));
+        } catch (Exception e) {
+            System.err.println("WebSocket broadcast error: " + e.getMessage());
+        }
+
         return numbers;
     }
 
     public void setWinningNumber(int number) {
         this.winningNumber = number;
+        
+        // 🔴 WebSocket: Broadcast winning number to all clients
+        try {
+            WebSocketServer.broadcastWinningNumber(number);
+            WebSocketServer.broadcastAnnouncement(
+                "Winning Number Announced!", 
+                "The winning number is " + number, 
+                "success"
+            );
+            
+            // Check for winners and notify them
+            notifyWinners(number);
+            
+            // Notify admins
+            WebSocketServer.broadcastToAdmins("WINNING_NUMBER_SET", 
+                "Winning number set to: " + number);
+        } catch (Exception e) {
+            System.err.println("WebSocket broadcast error: " + e.getMessage());
+        }
     }
 
     public boolean checkResult(String username) {
@@ -142,5 +178,26 @@ public class DataManager {
 
     public int getTicketCount() {
         return tickets.size();
+    }
+    
+    /**
+     * Check all tickets for winners and notify them via WebSocket
+     */
+    private void notifyWinners(int winningNumber) {
+        for (Ticket ticket : tickets.values()) {
+            for (int number : ticket.getNumbers()) {
+                if (number == winningNumber) {
+                    double prize = 100.0; // Prize for winning ticket
+                    WebSocketServer.notifyWinner(ticket.getUsername(), winningNumber, prize);
+                    
+                    // Update user balance
+                    User user = users.get(ticket.getUsername());
+                    if (user != null) {
+                        user.setBalance(user.getBalance() + prize);
+                    }
+                    break; // Only one win per ticket
+                }
+            }
+        }
     }
 }
