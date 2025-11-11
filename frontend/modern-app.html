@@ -213,6 +213,44 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- 🔴 Live Stats Section (WebSocket) -->
+            <div class="live-stats-section">
+                <div class="live-stats-header">
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span class="live-text">LIVE</span>
+                    </div>
+                    <h3>Real-Time Lottery Stats</h3>
+                </div>
+                <div class="live-stats-grid">
+                    <div class="live-stat-item">
+                        <i data-lucide="users"></i>
+                        <div class="live-stat-info">
+                            <span class="live-stat-label">Active Players</span>
+                            <span class="live-stat-value" id="liveActiveUsers">0</span>
+                        </div>
+                    </div>
+                    <div class="live-stat-item">
+                        <i data-lucide="ticket"></i>
+                        <div class="live-stat-info">
+                            <span class="live-stat-label">Total Tickets</span>
+                            <span class="live-stat-value" id="liveTicketCount">0</span>
+                        </div>
+                    </div>
+                    <div class="live-stat-item">
+                        <i data-lucide="dollar-sign"></i>
+                        <div class="live-stat-info">
+                            <span class="live-stat-label">Current Jackpot</span>
+                            <span class="live-stat-value" id="liveJackpot">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ws-connection-status" id="wsStatus">
+                    <i data-lucide="wifi-off"></i>
+                    <span>Connecting to live updates...</span>
+                </div>
+            </div>
         </div>
 
         <!-- Play Lottery Content -->
@@ -375,11 +413,20 @@
                 document.getElementById('authPage').style.display = 'none';
                 document.getElementById('dashboardPage').style.display = 'block';
                 showPage('dashboard');
+                
+                // 🔴 Connect to WebSocket for live updates
+                connectWebSocket();
             } else {
                 currentUser = null;
                 currentUserData = null;
                 document.getElementById('authPage').style.display = 'flex';
                 document.getElementById('dashboardPage').style.display = 'none';
+                
+                // Disconnect WebSocket
+                if (ws) {
+                    ws.close();
+                    ws = null;
+                }
             }
             lucide.createIcons();
         });
@@ -882,6 +929,193 @@
             setTimeout(() => {
                 toast.remove();
             }, 3000);
+        }
+        
+        // ========================================
+        // 🔴 WebSocket Real-Time Updates
+        // ========================================
+        let ws = null;
+        let wsReconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        
+        function connectWebSocket() {
+            try {
+                ws = new WebSocket('ws://localhost:9090/ws/lottery-updates');
+                
+                ws.onopen = function() {
+                    console.log('🟢 WebSocket connected');
+                    wsReconnectAttempts = 0;
+                    updateWSStatus(true);
+                    
+                    // Identify user to server (for admin detection)
+                    if (currentUser && currentUserData) {
+                        ws.send(JSON.stringify({
+                            type: 'IDENTIFY',
+                            userId: currentUser.uid,
+                            isAdmin: currentUserData.isAdmin || false
+                        }));
+                    }
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const message = JSON.parse(event.data);
+                        handleWebSocketMessage(message);
+                    } catch (error) {
+                        console.error('Error parsing WebSocket message:', error);
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    console.error('❌ WebSocket error:', error);
+                    updateWSStatus(false);
+                };
+                
+                ws.onclose = function() {
+                    console.log('🔴 WebSocket disconnected');
+                    updateWSStatus(false);
+                    
+                    // Attempt reconnection
+                    if (wsReconnectAttempts < maxReconnectAttempts) {
+                        wsReconnectAttempts++;
+                        console.log(`Attempting to reconnect (${wsReconnectAttempts}/${maxReconnectAttempts})...`);
+                        setTimeout(connectWebSocket, 3000);
+                    }
+                };
+                
+            } catch (error) {
+                console.error('Failed to create WebSocket:', error);
+                updateWSStatus(false);
+            }
+        }
+        
+        function handleWebSocketMessage(message) {
+            const { type, data } = message;
+            
+            switch (type) {
+                case 'CONNECTED':
+                    console.log('WebSocket handshake complete:', data);
+                    showToast('🔗 Connected to live updates', 'success');
+                    break;
+                    
+                case 'WINNING_NUMBER':
+                    // Real-time winning number announcement
+                    console.log('🎉 Winning number:', data.number);
+                    showWinnerAnimation(data.number);
+                    document.getElementById('winningNumberDisplay').textContent = data.number;
+                    document.getElementById('winningNumberDisplay').style.display = 'inline-flex';
+                    document.getElementById('noWinnerMsg').style.display = 'none';
+                    loadResults(); // Refresh results
+                    break;
+                    
+                case 'TICKET_COUNT':
+                    // Update live ticket count
+                    document.getElementById('liveTicketCount').textContent = data.total;
+                    break;
+                    
+                case 'LIVE_STATS':
+                    // Update all live statistics
+                    document.getElementById('liveActiveUsers').textContent = data.activeUsers;
+                    document.getElementById('liveTicketCount').textContent = data.totalTickets;
+                    document.getElementById('liveJackpot').textContent = `$${data.jackpot.toFixed(2)}`;
+                    break;
+                    
+                case 'TICKET_PURCHASED':
+                    // Show notification when someone buys a ticket
+                    if (data.username !== currentUser?.email) {
+                        showToast(`🎫 ${data.username} just bought a ticket!`, 'info');
+                    }
+                    break;
+                    
+                case 'YOU_WON':
+                    // Winner notification
+                    if (data.userId === currentUser?.uid) {
+                        showWinnerCelebration(data.number, data.prize);
+                    }
+                    break;
+                    
+                case 'COUNTDOWN':
+                    // Show countdown timer
+                    updateCountdown(data.seconds);
+                    break;
+                    
+                case 'ANNOUNCEMENT':
+                    // System announcement
+                    showToast(`📢 ${data.title}: ${data.content}`, data.type);
+                    break;
+                    
+                case 'ADMIN_EVENT':
+                    // Admin-only notifications
+                    if (currentUserData?.isAdmin) {
+                        console.log('👑 Admin event:', data.event, data.details);
+                        showToast(`👑 ${data.event}: ${data.details}`, 'info');
+                    }
+                    break;
+                    
+                default:
+                    console.log('Unknown WebSocket message type:', type);
+            }
+        }
+        
+        function updateWSStatus(connected) {
+            const statusEl = document.getElementById('wsStatus');
+            if (!statusEl) return;
+            
+            if (connected) {
+                statusEl.innerHTML = '<i data-lucide="wifi"></i><span>Live updates active</span>';
+                statusEl.className = 'ws-connection-status connected';
+            } else {
+                statusEl.innerHTML = '<i data-lucide="wifi-off"></i><span>Reconnecting...</span>';
+                statusEl.className = 'ws-connection-status disconnected';
+            }
+            lucide.createIcons();
+        }
+        
+        function showWinnerAnimation(number) {
+            // Create confetti effect
+            showToast(`🎉 WINNING NUMBER ANNOUNCED: ${number}!`, 'success');
+            
+            // Add visual pulse animation to winning number display
+            const display = document.getElementById('winningNumberDisplay');
+            if (display) {
+                display.classList.add('winner-pulse');
+                setTimeout(() => display.classList.remove('winner-pulse'), 2000);
+            }
+        }
+        
+        function showWinnerCelebration(number, prize) {
+            // Show big winner notification
+            const celebration = document.createElement('div');
+            celebration.className = 'winner-celebration';
+            celebration.innerHTML = `
+                <div class="celebration-content">
+                    <i data-lucide="trophy"></i>
+                    <h2>🎊 CONGRATULATIONS! 🎊</h2>
+                    <p>You matched the winning number <strong>${number}</strong>!</p>
+                    <div class="prize-amount">$${prize.toFixed(2)}</div>
+                    <button onclick="this.parentElement.parentElement.remove()">Claim Prize</button>
+                </div>
+            `;
+            document.body.appendChild(celebration);
+            lucide.createIcons();
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => celebration.remove(), 10000);
+            
+            // Reload user data to show updated balance
+            loadUserData();
+        }
+        
+        function updateCountdown(seconds) {
+            // Update countdown display if exists
+            const countdownEl = document.getElementById('countdown');
+            if (countdownEl) {
+                countdownEl.textContent = `Draw in: ${seconds}s`;
+                
+                if (seconds === 0) {
+                    countdownEl.textContent = 'Drawing now...';
+                }
+            }
         }
     </script>
 </body>
