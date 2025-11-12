@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// Note: This DataManager now serves as a coordination layer.
-// Most data operations are handled client-side with Firebase/Firestore.
-// This class maintains minimal state for server-side coordination.
 public class DataManager {
     private ConcurrentHashMap<String, User> users;
     private ConcurrentHashMap<Integer, Ticket> tickets;
