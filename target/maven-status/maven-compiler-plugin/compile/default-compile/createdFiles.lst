@@ -4,7 +4,6 @@ optional\HttpServerModule$HealthHandler.class
 optional\HttpServerModule$ViewTicketsHandler.class
 optional\HttpServerModule$ResultsHandler.class
 optional\HttpServerModule$TicketsHandler.class
-src\server\TestServer.class
 server\TestServer$Ticket.class
 protocol\Request.class
 optional\HttpServerModule.class
@@ -22,7 +21,6 @@ protocol\MessageParser.class
 model\LotteryResult.class
 optional\NIOServer.class
 optional\HttpServerModule$AdminLoginHandler.class
-src\server\TestServer$Ticket.class
 client\UserClientGUI.class
 server\ClientHandler.class
 server\LotteryServer.class
