@@ -5,6 +5,7 @@ optional\HttpServerModule$ViewTicketsHandler.class
 optional\HttpServerModule$ResultsHandler.class
 optional\HttpServerModule$TicketsHandler.class
 src\server\TestServer.class
+server\TestServer$Ticket.class
 protocol\Request.class
 optional\HttpServerModule.class
 optional\HttpServerModule$CheckResultsHandler.class
@@ -16,6 +17,7 @@ model\User.class
 optional\HttpServerModule$LoginHandler.class
 client\TestClientCLI.class
 client\AdminClientGUI.class
+server\TestServer.class
 protocol\MessageParser.class
 model\LotteryResult.class
 optional\NIOServer.class
