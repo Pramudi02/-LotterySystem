@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test - Lottery System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: #f1f5f9;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ff6b35, #ff5c4d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-indicator.connected {
+            background: #10b981;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        button {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff6b35, #ff5c4d);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .messages {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .message-time {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message-type {
+            font-weight: 600;
+            color: #ff6b35;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message-data {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>  WebSocket Test Panel</h1>
+        
+        <div class="status-bar">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <div>
+                <strong>Connection Status:</strong>
+                <span id="statusText">Disconnected</span>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Messages Received</div>
+                <div class="stat-value" id="messageCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Users</div>
+                <div class="stat-value" id="activeUsers">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Tickets</div>
+                <div class="stat-value" id="totalTickets">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Current Jackpot</div>
+                <div class="stat-value" id="jackpot">-</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="connect()" id="connectBtn">Connect</button>
+            <button onclick="disconnect()" id="disconnectBtn" disabled>Disconnect</button>
+            <button onclick="sendIdentify()" id="identifyBtn" disabled>Identify as Admin</button>
+            <button onclick="clearMessages()">Clear Messages</button>
+        </div>
+        
+        <h2 style="margin-bottom: 1rem;">📨 Received Messages</h2>
+        <div class="messages" id="messages">
+            <p style="color: #94a3b8; text-align: center;">No messages yet. Click Connect to start receiving real-time updates.</p>
+        </div>
+    </div>
+    
+    <script>
+        let ws = null;
+        let messageCount = 0;
+        
+        function connect() {
+            try {
+                ws = new WebSocket('ws://localhost:9090/ws/lottery-updates');
+                
+                ws.onopen = function() {
+                    updateStatus(true, 'Connected');
+                    addMessage('SYSTEM', 'WebSocket connection established', {});
+                    document.getElementById('connectBtn').disabled = true;
+                    document.getElementById('disconnectBtn').disabled = false;
+                    document.getElementById('identifyBtn').disabled = false;
+                };
+                
+                ws.onmessage = function(event) {
+                    messageCount++;
+                    document.getElementById('messageCount').textContent = messageCount;
+                    
+                    try {
+                        const message = JSON.parse(event.data);
+                        addMessage(message.type, 'Received WebSocket message', message.data);
+                        
+                        // Update stats
+                        if (message.type === 'LIVE_STATS' && message.data) {
+                            document.getElementById('activeUsers').textContent = message.data.activeUsers;
+                            document.getElementById('totalTickets').textContent = message.data.totalTickets;
+                            document.getElementById('jackpot').textContent = '$' + message.data.jackpot.toFixed(2);
+                        }
+                    } catch (e) {
+                        addMessage('ERROR', 'Failed to parse message', { error: e.message, raw: event.data });
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    addMessage('ERROR', 'WebSocket error occurred', { error: error.toString() });
+                    updateStatus(false, 'Error');
+                };
+                
+                ws.onclose = function() {
+                    addMessage('SYSTEM', 'WebSocket connection closed', {});
+                    updateStatus(false, 'Disconnected');
+                    document.getElementById('connectBtn').disabled = false;
+                    document.getElementById('disconnectBtn').disabled = true;
+                    document.getElementById('identifyBtn').disabled = true;
+                };
+                
+            } catch (error) {
+                addMessage('ERROR', 'Failed to create WebSocket connection', { error: error.message });
+                updateStatus(false, 'Error');
+            }
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        function sendIdentify() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const message = {
+                    type: 'IDENTIFY',
+                    userId: 'test-admin',
+                    isAdmin: true
+                };
+                ws.send(JSON.stringify(message));
+                addMessage('SENT', 'Sent identification message', message);
+            }
+        }
+        
+        function updateStatus(connected, text) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            if (connected) {
+                indicator.classList.add('connected');
+                statusText.textContent = text;
+                statusText.style.color = '#10b981';
+            } else {
+                indicator.classList.remove('connected');
+                statusText.textContent = text;
+                statusText.style.color = '#ef4444';
+            }
+        }
+        
+        function addMessage(type, description, data) {
+            const messagesContainer = document.getElementById('messages');
+            
+            // Clear placeholder
+            if (messagesContainer.children.length === 1 && messagesContainer.children[0].tagName === 'P') {
+                messagesContainer.innerHTML = '';
+            }
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            
+            messageElement.innerHTML = `
+                <div class="message-time">${timeString}</div>
+                <div class="message-type">${type}</div>
+                <div>${description}</div>
+                <div class="message-data">${JSON.stringify(data, null, 2)}</div>
+            `;
+            
+            messagesContainer.insertBefore(messageElement, messagesContainer.firstChild);
+            
+            // Keep only last 20 messages
+            while (messagesContainer.children.length > 20) {
+                messagesContainer.removeChild(messagesContainer.lastChild);
+            }
+        }
+        
+        function clearMessages() {
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = '<p style="color: #94a3b8; text-align: center;">Messages cleared.</p>';
+            messageCount = 0;
+            document.getElementById('messageCount').textContent = '0';
+        }
+        
+        // Auto-connect on load
+        window.addEventListener('load', function() {
+            setTimeout(connect, 500);
+        });
+    </script>
+</body>
+</html>

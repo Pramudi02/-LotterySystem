@@ -1,43 +1,34 @@
 package optional;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FileLogger {
-    private static final String LOG_FILE = "lottery_system.log";
-    private static FileLogger instance;
     private PrintWriter writer;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private FileLogger() {
-        try {
-            writer = new PrintWriter(new FileWriter(LOG_FILE, true));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public FileLogger(String filename) throws IOException {
+        writer = new PrintWriter(new FileWriter(filename, true));
     }
 
-    public static synchronized FileLogger getInstance() {
-        if (instance == null) {
-            instance = new FileLogger();
-        }
-        return instance;
-    }
-
-    public void log(String message) {
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String logEntry = "[" + timestamp + "] " + message;
-
-        writer.println(logEntry);
+    public void log(String event) {
+        String timestamp = LocalDateTime.now().format(formatter);
+        writer.println("[" + timestamp + "] " + event);
         writer.flush();
-
-        // Also print to console
-        System.out.println(logEntry);
     }
 
     public void close() {
-        if (writer != null) {
-            writer.close();
-        }
+        if (writer != null) writer.close();
+    }
+
+    // Example usage
+    public static void main(String[] args) throws IOException {
+        FileLogger logger = new FileLogger("lottery.log");
+        logger.log("Server started");
+        logger.log("Client connected");
+        logger.close();
     }
 }

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Services - Lottery System</title>
+    <link rel="stylesheet" href="network-services-detailed.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <button class="back-btn" onclick="window.history.back()">
+                <i data-lucide="arrow-left"></i>
+                Back
+            </button>
+            <h1>Network Services</h1>
+            <span class="live-badge"><span class="pulse-dot"></span>LIVE</span>
+        </header>
+
+        <!-- Overview -->
+        <section class="overview">
+            <div class="overview-card">
+                <i data-lucide="activity"></i>
+                <div>
+                    <span>Connections</span>
+                    <strong id="totalConnections">0</strong>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i data-lucide="zap"></i>
+                <div>
+                    <span>Requests/sec</span>
+                    <strong id="totalRequests">0</strong>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i data-lucide="clock"></i>
+                <div>
+                    <span>Latency</span>
+                    <strong id="avgLatency">0ms</strong>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i data-lucide="server"></i>
+                <div>
+                    <span>Uptime</span>
+                    <strong id="systemUptime">0h 0m</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- TCP Socket -->
+        <section class="service">
+            <div class="service-header">
+                <i data-lucide="radio"></i>
+                <h2>TCP Socket</h2>
+                <span class="badge online">ONLINE</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Connections</span>
+                    <strong id="tcpConnections">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Sent</span>
+                    <strong id="tcpMessagesSent">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Received</span>
+                    <strong id="tcpMessagesReceived">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Latency</span>
+                    <strong id="tcpLatency">0ms</strong>
+                </div>
+            </div>
+            <canvas id="tcpChart"></canvas>
+        </section>
+
+        <!-- Multithreading -->
+        <section class="service">
+            <div class="service-header">
+                <i data-lucide="cpu"></i>
+                <h2>Multithreading</h2>
+                <span class="badge online">ACTIVE</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Active</span>
+                    <strong id="activeThreads">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Queued</span>
+                    <strong id="queuedTasks">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Completed</span>
+                    <strong id="completedTasks">0</strong>
+                </div>
+                <div class="stat">
+                    <span>CPU</span>
+                    <strong id="cpuUsage">0%</strong>
+                </div>
+            </div>
+            <canvas id="threadChart"></canvas>
+        </section>
+
+        <!-- Thread Sync -->
+        <section class="service">
+            <div class="service-header">
+                <i data-lucide="lock"></i>
+                <h2>Thread Sync</h2>
+                <span class="badge online">PROTECTED</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Locks</span>
+                    <strong id="lockAcquisitions">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Wait</span>
+                    <strong id="lockWaitTime">0ms</strong>
+                </div>
+                <div class="stat">
+                    <span>Contentions</span>
+                    <strong id="lockContentions">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Safety</span>
+                    <strong>100%</strong>
+                </div>
+            </div>
+            <canvas id="syncChart"></canvas>
+        </section>
+
+        <!-- Client-Server -->
+        <section class="service">
+            <div class="service-header">
+                <i data-lucide="git-branch"></i>
+                <h2>Client-Server</h2>
+                <span class="badge online">CONNECTED</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Web Clients</span>
+                    <strong id="webClients">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Admin</span>
+                    <strong id="adminClients">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Servers</span>
+                    <strong>1</strong>
+                </div>
+                <div class="stat">
+                    <span>Trips</span>
+                    <strong id="roundTrips">0</strong>
+                </div>
+            </div>
+            <canvas id="clientserverChart"></canvas>
+        </section>
+
+        <!-- JSON Protocol -->
+        <section class="service">
+            <div class="service-header">
+                <i data-lucide="code"></i>
+                <h2>JSON Protocol</h2>
+                <span class="badge online">PARSING</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Parsed</span>
+                    <strong id="jsonParsed">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Errors</span>
+                    <strong id="jsonErrors">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Time</span>
+                    <strong id="jsonParseTime">0ms</strong>
+                </div>
+                <div class="stat">
+                    <span>Size</span>
+                    <strong id="jsonSize">0KB</strong>
+                </div>
+            </div>
+            <canvas id="jsonChart"></canvas>
+        </section>
+
+        <!-- HTTP Protocol -->
+        <section class="service">
+            <div class="service-header">
+                <i data-lucide="globe"></i>
+                <h2>HTTP Protocol</h2>
+                <span class="badge online">SERVING</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Requests</span>
+                    <strong id="httpTotalRequests">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Success</span>
+                    <strong id="http200">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Errors</span>
+                    <strong id="httpErrors">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Time</span>
+                    <strong id="httpResponseTime">0ms</strong>
+                </div>
+            </div>
+            <canvas id="httpChart"></canvas>
+        </section>
+
+        <!-- Async I/O -->
+        <section class="service">
+            <div class="service-header">
+                <i data-lucide="zap-off"></i>
+                <h2>Async I/O (NIO)</h2>
+                <span class="badge online">NON-BLOCKING</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Channels</span>
+                    <strong id="nioChannels">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Keys</span>
+                    <strong id="nioKeys">0</strong>
+                </div>
+                <div class="stat">
+                    <span>Buffers</span>
+                    <strong id="nioBuffers">0KB</strong>
+                </div>
+                <div class="stat">
+                    <span>Throughput</span>
+                    <strong id="nioThroughput">0MB/s</strong>
+                </div>
+            </div>
+            <canvas id="nioChart"></canvas>
+        </section>
+
+        <!-- Performance Charts -->
+        <section class="charts">
+            <div class="chart-card">
+                <h3>Efficiency</h3>
+                <canvas id="efficiencyChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Response Times</h3>
+                <canvas id="responseChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Resources</h3>
+                <canvas id="resourceChart"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script type="module" src="network-services-detailed.js"></script>
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+            console.log('✅ Lucide icons initialized');
+        }
+    </script>
+</body>
+</html>
