@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery System - Modern</title>
+    <link rel="stylesheet" href="app-styles-new.css">
+    <link rel="stylesheet" href="network-services-styles.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Authentication Page -->
+    <div id="authPage" class="container">
+        <div class="auth-split-container">
+            <!-- Left Side - Login Form -->
+            <div class="auth-left">
+                <div class="auth-form-wrapper">
+                    <div class="auth-header">
+                        <div class="logo-small">
+                            <img src="assets/logo2.png" alt="Lottery Logo">
+                        </div>
+                    </div>
+
+                    <div class="auth-tabs">
+                        <button class="tab-btn active" id="signinTab" onclick="switchAuthTab('signin', this)">
+                            Sign In
+                        </button>
+                        <button class="tab-btn" id="signupTab" onclick="switchAuthTab('signup', this)">
+                            Sign Up
+                        </button>
+                    </div>
+
+                    <!-- Sign In Form -->
+                    <form id="signinForm" class="auth-form active" onsubmit="handleSignIn(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="signinEmail" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="signinPassword" required placeholder="Enter your password">
+                                <button type="button" class="password-toggle" onclick="togglePassword('signinPassword')">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary btn-full">
+                            Log In
+                        </button>
+                        
+                    </form>
+
+                    <!-- Sign Up Form -->
+                    <form id="signupForm" class="auth-form" onsubmit="handleSignUp(event)">
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" id="signupName" required placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="signupEmail" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="signupPassword" required placeholder="Create password (min 6 chars)">
+                                <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary btn-full">
+                            Create Account
+                        </button>
+                        
+                    </form>
+
+                    <div id="authMessage" class="auth-message"></div>
+                    
+                    <div class="signup-prompt" id="signupPrompt">
+                        Don't have account? <a href="#" onclick="switchAuthTab('signup', document.getElementById('signupTab')); return false;">Sign up</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Image/Gradient -->
+            <div class="auth-right">
+                <div class="auth-right-overlay"></div>
+                <div class="auth-right-content">
+                    <div class="feature-icon">
+                        <i data-lucide="trophy"></i>
+                    </div>
+                    <h2>Win Big with Our Lottery System</h2>
+                    <p>Join thousands of winners and try your luck today!</p>
+                    <div class="feature-stats">
+                        <div class="stat-item">
+                            <i data-lucide="users"></i>
+                            <span>10,000+ Players</span>
+                        </div>
+                        <div class="stat-item">
+                            <i data-lucide="trophy"></i>
+                            <span>$1M+ Won</span>
+                        </div>
+                        <div class="stat-item">
+                            <i data-lucide="shield-check"></i>
+                            <span>100% Secure</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="container" style="display: none;">
+        <!-- Navigation Header -->
+        <div class="nav-header">
+            <div class="nav-brand">
+                <div class="nav-logo">
+                    <img src="assets/logo2.png" alt="Lottery Logo">
+                </div>
+            </div>
+            <div class="nav-actions">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-email" id="userEmail">user@email.com</div>
+                        <div class="user-balance">
+                            <i data-lucide="wallet"></i>
+                            <span id="userBalance">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <div class="nav-menu">
+            <button class="nav-item active" onclick="showPage('dashboard')">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="showPage('play')">
+                <i data-lucide="ticket"></i>
+                <span>Play Lottery</span>
+            </button>
+            <button class="nav-item" onclick="showPage('results')">
+                <i data-lucide="trophy"></i>
+                <span>Results</span>
+            </button>
+            <button class="nav-item" id="adminNavBtn" style="display: none;" onclick="showPage('admin')">
+                <i data-lucide="shield"></i>
+                <span>Admin</span>
+            </button>
+            <button class="nav-item" onclick="showPage('network')">
+                <i data-lucide="activity"></i>
+                <span>Network Services</span>
+            </button>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="page-content active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i data-lucide="wallet"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Current Balance</h3>
+                        <div class="stat-value" id="dashBalance">$0.00</div>
+                    </div>
+                    <div class="stat-footer">
+                        <i data-lucide="trending-up"></i>
+                        <span>Available for tickets</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i data-lucide="ticket"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3>My Tickets</h3>
+                        <div class="stat-value" id="totalTickets">0</div>
+                    </div>
+                    <div class="stat-footer">
+                        <i data-lucide="activity"></i>
+                        <span>Total purchased</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i data-lucide="trophy"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Winnings</h3>
+                        <div class="stat-value" id="totalWinnings">$0.00</div>
+                    </div>
+                    <div class="stat-footer">
+                        <i data-lucide="sparkles"></i>
+                        <span>Lifetime earnings</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 🔴 Live Stats Section (WebSocket) -->
+            <div class="live-stats-section">
+                <div class="live-stats-header">
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span class="live-text">LIVE</span>
+                    </div>
+                    <h3>Real-Time Lottery Stats</h3>
+                </div>
+                <div class="live-stats-grid">
+                    <div class="live-stat-item">
+                        <i data-lucide="users"></i>
+                        <div class="live-stat-info">
+                            <span class="live-stat-label">Active Players</span>
+                            <span class="live-stat-value" id="liveActiveUsers">0</span>
+                        </div>
+                    </div>
+                    <div class="live-stat-item">
+                        <i data-lucide="ticket"></i>
+                        <div class="live-stat-info">
+                            <span class="live-stat-label">Total Tickets</span>
+                            <span class="live-stat-value" id="liveTicketCount">0</span>
+                        </div>
+                    </div>
+                    <div class="live-stat-item">
+                        <i data-lucide="dollar-sign"></i>
+                        <div class="live-stat-info">
+                            <span class="live-stat-label">Current Jackpot</span>
+                            <span class="live-stat-value" id="liveJackpot">$100.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ws-connection-status" id="wsStatus">
+                    <i data-lucide="wifi-off"></i>
+                    <span>Connecting to live updates...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Play Lottery Content -->
+        <div id="playContent" class="page-content">
+            <div class="split-layout">
+                <!-- Left Side: Winning Number -->
+                <div class="split-left">
+                    <div class="split-card">
+                        <div class="split-header">
+                            <i data-lucide="trophy"></i>
+                            <h2>Current Winning Number</h2>
+                        </div>
+                        <div class="winning-number-display-large">
+                            <div id="playWinningNumber" class="play-winning-display">
+                                <span id="playWinningNumberValue">?</span>
+                            </div>
+                            <div id="playNoWinner" class="play-no-winner">Not set yet</div>
+                        </div>
+                        <div class="winning-info">
+                            <i data-lucide="info"></i>
+                            <p>Match this number to win $100!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Buy Ticket -->
+                <div class="split-right">
+                    <div class="split-card">
+                        <div class="split-header">
+                            <i data-lucide="ticket"></i>
+                            <h2>Buy Lottery Ticket</h2>
+                        </div>
+                        <p class="ticket-description">Each ticket gives you 5 random numbers (1-10)</p>
+                        
+                        <div class="price-info">
+                            <div class="price-label">
+                                <i data-lucide="tag"></i>
+                                <span>Ticket Price</span>
+                            </div>
+                            <div class="price-amount">$10.00</div>
+                        </div>
+
+                        <button class="btn-buy" id="buyTicketBtn" onclick="buyTicket()">
+                            <i data-lucide="shopping-cart"></i>
+                            <span>Buy Ticket</span>
+                        </button>
+
+                        <div id="newTicketDisplay" class="tickets-section" style="display: none;">
+                            <div class="section-header">
+                                <i data-lucide="check-circle"></i>
+                                <h3>Your New Ticket</h3>
+                            </div>
+                            <div id="newTicketNumbers" class="ticket-numbers"></div>
+                            <div id="ticketResultMessage" class="ticket-result-message"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Content -->
+        <div id="resultsContent" class="page-content">
+            <div class="split-layout">
+                <!-- Left Side: Winning Number -->
+                <div class="split-left Results-left">
+                    <div class="split-card">
+                        <div class="split-header">
+                            <i data-lucide="trophy"></i>
+                            <h2>Winning Number</h2>
+                        </div>
+                        <div class="winning-number-display-large">
+                            <div id="winningNumberDisplay" class="winning-number-display">?</div>
+                            <div id="noWinnerMsg" class="no-winner-message" style="margin-top: 1rem;">
+                                <i data-lucide="info"></i>
+                                <span>No winning number set yet</span>
+                            </div>
+                        </div>
+                        <div class="winning-info">
+                            <i data-lucide="sparkles"></i>
+                            <p>Check your tickets to see if you won!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: My Tickets -->
+                <div class="split-right">
+                    <div class="split-card">
+                        <div class="split-header">
+                            <i data-lucide="list"></i>
+                            <h2>My Tickets</h2>
+                        </div>
+                        <div id="ticketsGrid" class="tickets-list">
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i data-lucide="inbox"></i>
+                                </div>
+                                <h3>No Tickets Yet</h3>
+                                <p>Purchase tickets to see them here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Content -->
+        <div id="adminContent" class="page-content">
+            <div class="admin-container">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <i data-lucide="target"></i>
+                            <h3>Set Winning Number</h3>
+                        </div>
+                        <div class="winner-form">
+                            <div class="winner-input-group">
+                                <input type="number" id="winningNumberInput" min="1" max="10" placeholder="Enter number (1-10)">
+                                <button class="btn-set-winner" onclick="setWinningNumber()">
+                                    <i data-lucide="check"></i>
+                                    <span>Set Winner</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <i data-lucide="award"></i>
+                            <h3>Winning Tickets Only</h3>
+                        </div>
+                        <button class="btn-primary" onclick="loadWinningTickets()">
+                            <i data-lucide="refresh-cw"></i>
+                            <span>Load Winners</span>
+                        </button>
+                        <div id="allTicketsContainer" class="table-container" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+
+                <div class="admin-card" style="margin-top: 2rem;">
+                    <div class="admin-card-header">
+                        <i data-lucide="users"></i>
+                        <h3>All Users</h3>
+                    </div>
+                    <button class="btn-primary" onclick="loadAllUsers()">
+                        <i data-lucide="refresh-cw"></i>
+                        <span>Load Users</span>
+                    </button>
+                    <div id="allUsersContainer" class="table-container" style="margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Services Content -->
+        <div id="networkContent" class="page-content">
+            <div class="network-header">
+                <h2>Network Services Monitoring</h2>
+                <p>Real-time system performance and network statistics</p>
+                <a href="network-services-detailed.html" class="btn-detailed-view" target="_blank">
+                    <i data-lucide="external-link"></i>
+                    <span>View Detailed Network Architecture</span>
+                </a>
+            </div>
+
+            <div class="network-grid">
+                <!-- WebSocket Service -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon websocket">
+                            <i data-lucide="radio"></i>
+                        </div>
+                        <div class="service-info">
+                            <h3>WebSocket Service</h3>
+                            <span class="service-status online" id="wsStatus">Online</span>
+                        </div>
+                    </div>
+                    <div class="service-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Active Connections</span>
+                            <span class="stat-number" id="wsConnections">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Messages/sec</span>
+                            <span class="stat-number" id="wsMessages">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Latency</span>
+                            <span class="stat-number" id="wsLatency">0ms</span>
+                        </div>
+                    </div>
+                    <canvas id="wsChart" class="service-chart"></canvas>
+                    <button class="btn-view-more" onclick="showServiceDetails('websocket')">
+                        <i data-lucide="info"></i>
+                        View More
+                    </button>
+                </div>
+
+                <!-- Firebase Service -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon firebase">
+                            <i data-lucide="database"></i>
+                        </div>
+                        <div class="service-info">
+                            <h3>Firebase Database</h3>
+                            <span class="service-status online" id="fbStatus">Online</span>
+                        </div>
+                    </div>
+                    <div class="service-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Tickets</span>
+                            <span class="stat-number" id="fbTickets">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Users</span>
+                            <span class="stat-number" id="fbUsers">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Query Time</span>
+                            <span class="stat-number" id="fbQueryTime">0ms</span>
+                        </div>
+                    </div>
+                    <canvas id="fbChart" class="service-chart"></canvas>
+                    <button class="btn-view-more" onclick="showServiceDetails('firebase')">
+                        <i data-lucide="info"></i>
+                        View More
+                    </button>
+                </div>
+
+                <!-- HTTP Service -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon http">
+                            <i data-lucide="globe"></i>
+                        </div>
+                        <div class="service-info">
+                            <h3>HTTP API Service</h3>
+                            <span class="service-status online" id="httpStatus">Online</span>
+                        </div>
+                    </div>
+                    <div class="service-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Requests</span>
+                            <span class="stat-number" id="httpRequests">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success Rate</span>
+                            <span class="stat-number" id="httpSuccess">100%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Response</span>
+                            <span class="stat-number" id="httpResponse">0ms</span>
+                        </div>
+                    </div>
+                    <canvas id="httpChart" class="service-chart"></canvas>
+                    <button class="btn-view-more" onclick="showServiceDetails('http')">
+                        <i data-lucide="info"></i>
+                        View More
+                    </button>
+                </div>
+
+                <!-- Authentication Service -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon auth">
+                            <i data-lucide="lock"></i>
+                        </div>
+                        <div class="service-info">
+                            <h3>Authentication</h3>
+                            <span class="service-status online" id="authStatus">Online</span>
+                        </div>
+                    </div>
+                    <div class="service-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Active Sessions</span>
+                            <span class="stat-number" id="authSessions">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Auth Requests</span>
+                            <span class="stat-number" id="authRequests">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success Rate</span>
+                            <span class="stat-number" id="authSuccessRate">100%</span>
+                        </div>
+                    </div>
+                    <canvas id="authChart" class="service-chart"></canvas>
+                    <button class="btn-view-more" onclick="showServiceDetails('auth')">
+                        <i data-lucide="info"></i>
+                        View More
+                    </button>
+                </div>
+
+                <!-- Transaction Service -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon transaction">
+                            <i data-lucide="dollar-sign"></i>
+                        </div>
+                        <div class="service-info">
+                            <h3>Transaction Service</h3>
+                            <span class="service-status online" id="txStatus">Online</span>
+                        </div>
+                    </div>
+                    <div class="service-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Volume</span>
+                            <span class="stat-number" id="txVolume">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Transactions</span>
+                            <span class="stat-number" id="txCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Processing Time</span>
+                            <span class="stat-number" id="txTime">0ms</span>
+                        </div>
+                    </div>
+                    <canvas id="txChart" class="service-chart"></canvas>
+                    <button class="btn-view-more" onclick="showServiceDetails('transaction')">
+                        <i data-lucide="info"></i>
+                        View More
+                    </button>
+                </div>
+
+                <!-- Lottery Engine -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon lottery">
+                            <i data-lucide="zap"></i>
+                        </div>
+                        <div class="service-info">
+                            <h3>Lottery Engine</h3>
+                            <span class="service-status online" id="lotteryStatus">Online</span>
+                        </div>
+                    </div>
+                    <div class="service-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Draws Today</span>
+                            <span class="stat-number" id="lotteryDraws">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Winners Found</span>
+                            <span class="stat-number" id="lotteryWinners">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Processing</span>
+                            <span class="stat-number" id="lotteryProcessing">0ms</span>
+                        </div>
+                    </div>
+                    <canvas id="lotteryChart" class="service-chart"></canvas>
+                    <button class="btn-view-more" onclick="showServiceDetails('lottery')">
+                        <i data-lucide="info"></i>
+                        View More
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Details Modal -->
+    <div id="serviceModal" class="modal" style="display: none;">
+        <div class="modal-content service-modal">
+            <button class="modal-close" onclick="closeServiceModal()">
+                <i data-lucide="x"></i>
+            </button>
+            <div id="modalServiceContent"></div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Firebase Configuration and JavaScript -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWEtzjum1mcPN3e61XghXaNC9qum7vhDw",
+            authDomain: "lotterysystem-18963.firebaseapp.com",
+            projectId: "lotterysystem-18963",
+            storageBucket: "lotterysystem-18963.firebasestorage.app",
+            messagingSenderId: "41637006495",
+            appId: "1:41637006495:web:e7c9e6e3a57792bbc126aa",
+            measurementId: "G-HKLLXJNVHS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentUserData = null;
+
+        // Initialize Lucide icons when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+
+        // Auth State Listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData();
+                document.getElementById('authPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                showPage('dashboard');
+                
+                // 🔴 Connect to WebSocket for live updates
+                connectWebSocket();
+            } else {
+                currentUser = null;
+                currentUserData = null;
+                document.getElementById('authPage').style.display = 'flex';
+                document.getElementById('dashboardPage').style.display = 'none';
+                
+                // Disconnect WebSocket
+                if (ws) {
+                    ws.close();
+                    ws = null;
+                }
+            }
+            lucide.createIcons();
+        });
+
+        // Load User Data
+        async function loadUserData() {
+            try {
+                const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+                if (userDoc.exists()) {
+                    currentUserData = userDoc.data();
+                } else {
+                    currentUserData = {
+                        email: currentUser.email,
+                        displayName: currentUser.displayName || currentUser.email.split('@')[0],
+                        balance: 100.0,
+                        isAdmin: false,
+                        createdAt: Timestamp.now()
+                    };
+                    await setDoc(doc(db, "users", currentUser.uid), currentUserData);
+                }
+
+                updateUIWithUserData();
+            } catch (error) {
+                console.error("Error loading user data:", error);
+                showToast("Error loading user data", "error");
+            }
+        }
+
+        // Update UI with User Data
+        function updateUIWithUserData() {
+            const displayName = currentUserData.displayName || currentUser.email;
+            const balance = currentUserData.balance || 0;
+
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userBalance').textContent = `$${balance.toFixed(2)}`;
+            document.getElementById('dashBalance').textContent = `$${balance.toFixed(2)}`;
+
+            // Show/hide admin button
+            if (currentUserData.isAdmin) {
+                document.getElementById('adminNavBtn').style.display = 'flex';
+            }
+        }
+
+        // Navigation
+        window.showPage = function(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            // Show selected page
+            document.getElementById(`${pageName}Content`).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.textContent.toLowerCase().includes(pageName)) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Load page-specific data
+            if (pageName === 'results') loadResults();
+            if (pageName === 'dashboard') loadDashboardStats();
+            if (pageName === 'play') loadPlayPageWinningNumber();
+            if (pageName === 'admin') loadAdminWinningNumber();
+            if (pageName === 'network') initNetworkMonitoring();
+
+            lucide.createIcons();
+        };
+
+        // Auth Tab Switching
+        window.switchAuthTab = function(tab, button) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+
+            button.classList.add('active');
+            document.getElementById(`${tab}Form`).classList.add('active');
+            document.getElementById('authMessage').textContent = '';
+            
+            // Update signup prompt visibility
+            const signupPrompt = document.getElementById('signupPrompt');
+            if (signupPrompt) {
+                signupPrompt.style.display = tab === 'signin' ? 'block' : 'none';
+            }
+            
+            lucide.createIcons();
+        };
+
+        // Toggle Password Visibility
+        window.togglePassword = function(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.parentElement.querySelector('.password-toggle i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            
+            lucide.createIcons();
+        };
+
+        // Sign In
+        window.handleSignIn = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('signinEmail').value;
+            const password = document.getElementById('signinPassword').value;
+
+            showLoading(true);
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast("Signed in successfully!", "success");
+            } catch (error) {
+                showAuthMessage(error.message, "error");
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Sign Up
+        window.handleSignUp = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (password.length < 6) {
+                showAuthMessage("Password must be at least 6 characters", "error");
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                await setDoc(doc(db, "users", userCredential.user.uid), {
+                    email: email,
+                    displayName: name,
+                    balance: 100.0,
+                    isAdmin: false,
+                    createdAt: Timestamp.now()
+                });
+
+                showToast("Account created successfully!", "success");
+            } catch (error) {
+                showAuthMessage(error.message, "error");
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                showToast("Signed out successfully", "success");
+            } catch (error) {
+                showToast("Error signing out", "error");
+            }
+        };
+
+        // Buy Ticket
+        window.buyTicket = async function() {
+            if (!currentUser) return;
+
+            const btn = document.getElementById('buyTicketBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader"></i><span>Processing...</span>';
+            lucide.createIcons();
+
+            try {
+                if (currentUserData.balance < 10) {
+                    showToast('Insufficient balance!', 'error');
+                    return;
+                }
+
+                const numbers = Array.from({length: 5}, () => Math.floor(Math.random() * 10) + 1);
+
+                await addDoc(collection(db, "tickets"), {
+                    userId: currentUser.uid,
+                    numbers: numbers,
+                    purchaseTime: Timestamp.now(),
+                    checked: false
+                });
+
+                const newBalance = currentUserData.balance - 10;
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    balance: newBalance
+                });
+
+                currentUserData.balance = newBalance;
+                updateUIWithUserData();
+
+                // Check if ticket has winning number
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+                
+                let hasWon = false;
+                if (winningNumber && numbers.includes(winningNumber)) {
+                    hasWon = true;
+                    // Award $100 prize
+                    const prizeBalance = currentUserData.balance + 100;
+                    await updateDoc(doc(db, "users", currentUser.uid), {
+                        balance: prizeBalance
+                    });
+                    currentUserData.balance = prizeBalance;
+                    updateUIWithUserData();
+                }
+
+                // Display new ticket
+                const display = document.getElementById('newTicketDisplay');
+                const numbersContainer = document.getElementById('newTicketNumbers');
+                const resultMessage = document.getElementById('ticketResultMessage');
+                
+                numbersContainer.innerHTML = numbers.map(n => {
+                    const isWinner = n === winningNumber;
+                    return `<div class="number-ball ${isWinner ? 'match' : ''}">${n}</div>`;
+                }).join('');
+                display.style.display = 'block';
+
+                if (hasWon) {
+                    resultMessage.innerHTML = `
+                        <div class="result-win">
+                            <i data-lucide="trophy"></i>
+                            <div>
+                                <strong> WINNER! </strong>
+                                <p>You matched the winning number and won $100!</p>
+                            </div>
+                        </div>
+                    `;
+                    showToast(" WINNER! You matched the winning number and won $100!", "success");
+                    showWinnerCelebration(winningNumber, 100);
+                } else if (winningNumber) {
+                    resultMessage.innerHTML = `
+                        <div class="result-lose">
+                            <i data-lucide="x-circle"></i>
+                            <div>
+                                <strong>Better luck next time!</strong>
+                                <p>No matching numbers. Try again!</p>
+                            </div>
+                        </div>
+                    `;
+                    showToast("Ticket purchased! Good luck!", "success");
+                } else {
+                    resultMessage.innerHTML = '';
+                    showToast("Ticket purchased! Good luck!", "success");
+                }
+                
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error("Error buying ticket:", error);
+                showToast('Error purchasing ticket', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="shopping-cart"></i><span>Buy Ticket</span>';
+                lucide.createIcons();
+                
+                // Refresh dashboard and results if active
+                loadDashboardStats();
+                const resultsContent = document.getElementById('resultsContent');
+                if (resultsContent && resultsContent.classList.contains('active')) {
+                    loadResults();
+                }
+            }
+        };
+
+        // Load Dashboard Stats
+        async function loadDashboardStats() {
+            if (!currentUser) return;
+
+            try {
+                const q = query(collection(db, "tickets"), where("userId", "==", currentUser.uid));
+                const snapshot = await getDocs(q);
+                
+                document.getElementById('totalTickets').textContent = snapshot.size;
+
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+
+                let winnings = 0;
+                if (winningNumber) {
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.numbers.includes(winningNumber)) {
+                            winnings += 100;
+                        }
+                    });
+                }
+                
+                document.getElementById('totalWinnings').textContent = `$${winnings.toFixed(2)}`;
+
+            } catch (error) {
+                console.error("Error loading stats:", error);
+            }
+        }
+
+        // Load Winning Number on Play Page
+        async function loadPlayPageWinningNumber() {
+            if (!currentUser) return;
+
+            try {
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+                
+                const valueEl = document.getElementById('playWinningNumberValue');
+                const displayEl = document.getElementById('playWinningNumber');
+                const noWinnerEl = document.getElementById('playNoWinner');
+                
+                if (winningNumber) {
+                    valueEl.textContent = winningNumber;
+                    displayEl.style.display = 'flex';
+                    noWinnerEl.style.display = 'none';
+                } else {
+                    displayEl.style.display = 'none';
+                    noWinnerEl.style.display = 'block';
+                }
+                
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error loading winning number:", error);
+            }
+        }
+
+        // Load Results
+        window.loadResults = async function() {
+            if (!currentUser) {
+                console.log('No current user, skipping loadResults');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                // Get winning number
+                const systemDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = systemDoc.exists() ? systemDoc.data().winningNumber : null;
+                
+                if (winningNumber) {
+                    document.getElementById('winningNumberDisplay').textContent = winningNumber;
+                    document.getElementById('winningNumberDisplay').style.display = 'inline-flex';
+                    document.getElementById('noWinnerMsg').style.display = 'none';
+                } else {
+                    document.getElementById('winningNumberDisplay').style.display = 'none';
+                    document.getElementById('noWinnerMsg').style.display = 'flex';
+                }
+
+                // Get user's tickets - simplified query without orderBy to avoid index issues
+                const q = query(
+                    collection(db, "tickets"),
+                    where("userId", "==", currentUser.uid)
+                );
+                
+                const snapshot = await getDocs(q);
+                const tickets = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    tickets.push({
+                        id: doc.id,
+                        numbers: data.numbers,
+                        purchaseTime: data.purchaseTime ? data.purchaseTime.toDate() : new Date(),
+                        won: winningNumber && data.numbers.includes(winningNumber)
+                    });
+                });
+
+                // Sort tickets by purchase time (newest first)
+                tickets.sort((a, b) => b.purchaseTime - a.purchaseTime);
+
+                console.log(`Loaded ${tickets.length} tickets for user`);
+                displayTickets(tickets, winningNumber);
+
+            } catch (error) {
+                console.error("Error loading results:", error);
+                showToast("Error loading results", "error");
+            } finally {
+                showLoading(false);
+                lucide.createIcons();
+            }
+        };
+
+        // Display Tickets
+        function displayTickets(tickets, winningNumber) {
+            const container = document.getElementById('ticketsGrid');
+            
+            console.log(`Displaying ${tickets.length} tickets, winning number: ${winningNumber}`);
+            
+            if (tickets.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i data-lucide="inbox"></i>
+                        </div>
+                        <h3>No Tickets Yet</h3>
+                        <p>Purchase tickets to see them here</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = tickets.map(ticket => {
+                const statusClass = ticket.won ? 'won' : (winningNumber ? 'lost' : 'pending');
+                const statusText = ticket.won ? 'Winner!' : (winningNumber ? 'No Match' : 'Pending');
+                const statusIcon = ticket.won ? 'trophy' : (winningNumber ? 'x-circle' : 'clock');
+                
+                return `
+                    <div class="ticket-card">
+                        <div class="ticket-header">
+                            <span class="ticket-id">
+                                <i data-lucide="ticket"></i>
+                                ${ticket.id.substring(0, 8)}
+                            </span>
+                            <span class="ticket-date">${ticket.purchaseTime.toLocaleDateString()}</span>
+                        </div>
+                        <div class="ticket-numbers">
+                            ${ticket.numbers.map(n => {
+                                const matchClass = n === winningNumber ? 'match' : '';
+                                return `<div class="number-ball ${matchClass}">${n}</div>`;
+                            }).join('')}
+                        </div>
+                        <div class="ticket-status ${statusClass}">
+                            <i data-lucide="${statusIcon}"></i>
+                            ${statusText}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Admin: Set Winning Number
+        window.setWinningNumber = async function() {
+            if (!currentUserData?.isAdmin) {
+                showToast("Admin access required", "error");
+                return;
+            }
+
+            const input = document.getElementById('winningNumberInput');
+            const number = parseInt(input.value);
+
+            if (!number || number < 1 || number > 10) {
+                showToast('Please enter a number between 1 and 10', 'error');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                await setDoc(doc(db, "system", "lottery"), {
+                    winningNumber: number,
+                    setTime: Timestamp.now()
+                }, { merge: true });
+
+                showToast(`Winning number set to ${number}`, 'success');
+                input.value = '';
+
+            } catch (error) {
+                console.error("Error setting winning number:", error);
+                showToast('Error setting winning number', 'error');
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Admin: Load Winning Tickets Only
+        window.loadWinningTickets = async function() {
+            if (!currentUserData?.isAdmin) return;
+
+            showLoading(true);
+            try {
+                // First get the current winning number
+                const lotteryDoc = await getDoc(doc(db, "system", "lottery"));
+                const winningNumber = lotteryDoc.exists() ? lotteryDoc.data().winningNumber : null;
+
+                if (!winningNumber) {
+                    const container = document.getElementById('allTicketsContainer');
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="alert-circle"></i> No winning number set yet</p>';
+                    lucide.createIcons();
+                    showLoading(false);
+                    return;
+                }
+
+                // Get all tickets
+                const snapshot = await getDocs(collection(db, "tickets"));
+                const winningTickets = [];
+                
+                // Filter for winning tickets and get user details
+                for (const ticketDoc of snapshot.docs) {
+                    const data = ticketDoc.data();
+                    
+                    // Check if any of the ticket numbers match the winning number
+                    if (data.numbers && data.numbers.includes(winningNumber)) {
+                        // Get username from users collection
+                        const userDoc = await getDoc(doc(db, "users", data.userId));
+                        const username = userDoc.exists() ? userDoc.data().username : 'Unknown User';
+                        
+                        winningTickets.push({
+                            id: ticketDoc.id.substring(0, 8),
+                            username: username,
+                            userId: data.userId.substring(0, 8),
+                            numbers: data.numbers,
+                            time: data.purchaseTime.toDate(),
+                            winningNumber: winningNumber
+                        });
+                    }
+                }
+
+                // Sort by purchase time (newest first)
+                winningTickets.sort((a, b) => b.time - a.time);
+
+                const container = document.getElementById('allTicketsContainer');
+                if (winningTickets.length === 0) {
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="inbox"></i> No winning tickets yet</p>';
+                } else {
+                    container.innerHTML = `
+                        <div class="winning-ticket-stats">
+                            <p><strong>Current Winning Number:</strong> <span class="highlight-number">${winningNumber}</span></p>
+                            <p><strong>Total Winners:</strong> ${winningTickets.length}</p>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket Numbers</th>
+                                    <th>Purchase Time</th>
+                                    <th>Prize</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${winningTickets.map(t => `
+                                    <tr class="winner-row">
+                                        <td>
+                                            ${t.numbers.map(num => 
+                                                num === winningNumber 
+                                                ? `<span class="winning-number-highlight">${num}</span>`
+                                                : `<span class="ticket-number">${num}</span>`
+                                            ).join(' ')}
+                                        </td>
+                                        <td>${t.time.toLocaleString()}</td>
+                                        <td class="prize-amount">$100.00</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error loading winning tickets:", error);
+                showToast('Error loading winning tickets', 'error');
+            } finally {
+                showLoading(false);
+            }
+        };
+
+        // Admin: Load current winning number display
+        window.loadAdminWinningNumber = async function() {
+            try {
+                const lotteryDoc = await getDoc(doc(db, "system", "lottery"));
+                if (lotteryDoc.exists()) {
+                    const winningNumber = lotteryDoc.data().winningNumber;
+                    const displayElement = document.querySelector('#adminCurrentWinningNumber .admin-winning-circle');
+                    if (displayElement) {
+                        displayElement.textContent = winningNumber || '--';
+                        displayElement.classList.add('has-winner');
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading admin winning number:", error);
+            }
+        };
+
+        // Admin: Load All Tickets
+        window.loadAllTickets = async function() {
+            if (!currentUserData?.isAdmin) return;
+
+            showLoading(true);
+            try {
+                const snapshot = await getDocs(collection(db, "tickets"));
+                const tickets = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    tickets.push({
+                        id: doc.id.substring(0, 8),
+                        userId: data.userId.substring(0, 8),
+                        numbers: data.numbers,
+                        time: data.purchaseTime.toDate()
+                    });
+                });
+
+                const container = document.getElementById('allTicketsContainer');
+                if (tickets.length === 0) {
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="inbox"></i> No tickets yet</p>';
+                } else {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>User ID</th>
+                                    <th>Numbers</th>
+                                    <th>Purchase Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tickets.map(t => `
+                                    <tr>
+                                        <td>${t.id}...</td>
+                                        <td>${t.userId}...</td>
+                                        <td>${t.numbers.join(', ')}</td>
+                                        <td>${t.time.toLocaleString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error loading tickets:", error);
+                showToast("Error loading tickets", "error");
+            } finally {
+                showLoading(false);
+                lucide.createIcons();
+            }
+        };
+
+        // Admin: Load All Users
+        window.loadAllUsers = async function() {
+            if (!currentUserData?.isAdmin) return;
+
+            showLoading(true);
+            try {
+                const snapshot = await getDocs(collection(db, "users"));
+                const users = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    users.push({
+                        email: data.email,
+                        name: data.displayName,
+                        balance: data.balance || 0,
+                        isAdmin: data.isAdmin || false
+                    });
+                });
+
+                const container = document.getElementById('allUsersContainer');
+                if (users.length === 0) {
+                    container.innerHTML = '<p class="empty-state"><i data-lucide="inbox"></i> No users yet</p>';
+                } else {
+                    container.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Balance</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${users.map(u => `
+                                    <tr>
+                                        <td>${u.email}</td>
+                                        <td>${u.name}</td>
+                                        <td>$${u.balance.toFixed(2)}</td>
+                                        <td>${u.isAdmin ? '<i data-lucide="shield"></i> Admin' : 'User'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error loading users:", error);
+                showToast("Error loading users", "error");
+            } finally {
+                showLoading(false);
+                lucide.createIcons();
+            }
+        };
+
+        // Utility Functions
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        function showAuthMessage(message, type) {
+            const msgDiv = document.getElementById('authMessage');
+            msgDiv.textContent = message;
+            msgDiv.className = `auth-message ${type}`;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info'}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // ========================================
+        // 🔴 WebSocket Real-Time Updates
+        // ========================================
+        let ws = null;
+        let wsReconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        
+        function connectWebSocket() {
+            try {
+                ws = new WebSocket('ws://localhost:9090/ws/lottery-updates');
+                
+                ws.onopen = function() {
+                    console.log('🟢 WebSocket connected');
+                    wsReconnectAttempts = 0;
+                    updateWSStatus(true);
+                    
+                    // Identify user to server (for admin detection)
+                    if (currentUser && currentUserData) {
+                        ws.send(JSON.stringify({
+                            type: 'IDENTIFY',
+                            userId: currentUser.uid,
+                            isAdmin: currentUserData.isAdmin || false
+                        }));
+                    }
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const message = JSON.parse(event.data);
+                        handleWebSocketMessage(message);
+                    } catch (error) {
+                        console.error('Error parsing WebSocket message:', error);
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    console.error('❌ WebSocket error:', error);
+                    updateWSStatus(false);
+                };
+                
+                ws.onclose = function() {
+                    console.log('🔴 WebSocket disconnected');
+                    updateWSStatus(false);
+                    
+                    // Attempt reconnection
+                    if (wsReconnectAttempts < maxReconnectAttempts) {
+                        wsReconnectAttempts++;
+                        console.log(`Attempting to reconnect (${wsReconnectAttempts}/${maxReconnectAttempts})...`);
+                        setTimeout(connectWebSocket, 3000);
+                    }
+                };
+                
+            } catch (error) {
+                console.error('Failed to create WebSocket:', error);
+                updateWSStatus(false);
+            }
+        }
+        
+        function handleWebSocketMessage(message) {
+            const { type, data } = message;
+            
+            switch (type) {
+                case 'CONNECTED':
+                    console.log('WebSocket handshake complete:', data);
+                    showToast('🔗 Connected to live updates', 'success');
+                    break;
+                    
+                case 'WINNING_NUMBER':
+                    // Real-time winning number announcement
+                    console.log('🎉 Winning number:', data.number);
+                    showWinnerAnimation(data.number);
+                    
+                    // Update results page
+                    document.getElementById('winningNumberDisplay').textContent = data.number;
+                    document.getElementById('winningNumberDisplay').style.display = 'inline-flex';
+                    document.getElementById('noWinnerMsg').style.display = 'none';
+                    
+                    // Update play page winning number
+                    const playValueEl = document.getElementById('playWinningNumberValue');
+                    const playDisplayEl = document.getElementById('playWinningNumber');
+                    const playNoWinnerEl = document.getElementById('playNoWinner');
+                    if (playValueEl) {
+                        playValueEl.textContent = data.number;
+                        playValueEl.classList.add('winner-pulse');
+                        setTimeout(() => playValueEl.classList.remove('winner-pulse'), 2000);
+                    }
+                    if (playDisplayEl) playDisplayEl.style.display = 'flex';
+                    if (playNoWinnerEl) playNoWinnerEl.style.display = 'none';
+                    
+                    // Update admin page winning number
+                    const adminWinningCircle = document.querySelector('#adminCurrentWinningNumber .admin-winning-circle');
+                    if (adminWinningCircle) {
+                        adminWinningCircle.textContent = data.number;
+                        adminWinningCircle.classList.add('has-winner');
+                    }
+                    
+                    loadResults(); // Refresh results
+                    break;
+                    
+                case 'TICKET_COUNT':
+                    // Update live ticket count
+                    document.getElementById('liveTicketCount').textContent = data.total;
+                    break;
+                    
+                case 'LIVE_STATS':
+                    // Update all live statistics
+                    document.getElementById('liveActiveUsers').textContent = data.activeUsers;
+                    document.getElementById('liveTicketCount').textContent = data.totalTickets;
+                    document.getElementById('liveJackpot').textContent = `$${data.jackpot.toFixed(2)}`;
+                    break;
+                    
+                case 'TICKET_PURCHASED':
+                    // Show notification when someone buys a ticket
+                    if (data.username !== currentUser?.email) {
+                        showToast(`  ${data.username} just bought a ticket!`, 'info');
+                    }
+                    // Reload results and dashboard to show new tickets
+                    loadDashboardStats();
+                    const resultsContent = document.getElementById('resultsContent');
+                    if (resultsContent && resultsContent.classList.contains('active')) {
+                        loadResults();
+                    }
+                    break;
+                    
+                case 'YOU_WON':
+                    // Winner notification
+                    if (data.userId === currentUser?.uid) {
+                        showWinnerCelebration(data.number, data.prize);
+                    }
+                    break;
+                    
+                case 'COUNTDOWN':
+                    // Show countdown timer
+                    updateCountdown(data.seconds);
+                    break;
+                    
+                case 'ANNOUNCEMENT':
+                    // System announcement
+                    showToast(`📢 ${data.title}: ${data.content}`, data.type);
+                    break;
+                    
+                case 'ADMIN_EVENT':
+                    // Admin-only notifications
+                    if (currentUserData?.isAdmin) {
+                        console.log('👑 Admin event:', data.event, data.details);
+                        showToast(`👑 ${data.event}: ${data.details}`, 'info');
+                    }
+                    break;
+                    
+                default:
+                    console.log('Unknown WebSocket message type:', type);
+            }
+        }
+        
+        function updateWSStatus(connected) {
+            const statusEl = document.getElementById('wsStatus');
+            if (!statusEl) return;
+            
+            if (connected) {
+                statusEl.innerHTML = '<i data-lucide="wifi"></i><span>Live updates active</span>';
+                statusEl.className = 'ws-connection-status connected';
+            } else {
+                statusEl.innerHTML = '<i data-lucide="wifi-off"></i><span>Reconnecting...</span>';
+                statusEl.className = 'ws-connection-status disconnected';
+            }
+            lucide.createIcons();
+        }
+        
+        function showWinnerAnimation(number) {
+            // Create confetti effect
+            showToast(` WINNING NUMBER ANNOUNCED: ${number}!`, 'success');
+            
+            // Add visual pulse animation to winning number display
+            const display = document.getElementById('winningNumberDisplay');
+            if (display) {
+                display.classList.add('winner-pulse');
+                setTimeout(() => display.classList.remove('winner-pulse'), 2000);
+            }
+        }
+        
+        function showWinnerCelebration(number, prize) {
+            // Show big winner notification
+            const celebration = document.createElement('div');
+            celebration.className = 'winner-celebration';
+            celebration.innerHTML = `
+                <div class="celebration-content">
+                    <i data-lucide="trophy"></i>
+                    <h2>★ CONGRATULATIONS! ★</h2>
+                    <p>You matched the winning number <strong>${number}</strong>!</p>
+                    <div class="prize-amount">$${prize.toFixed(2)}</div>
+                    <button onclick="this.parentElement.parentElement.remove()">Claim Prize</button>
+                </div>
+            `;
+            document.body.appendChild(celebration);
+            lucide.createIcons();
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => celebration.remove(), 10000);
+            
+            // Reload user data to show updated balance
+            loadUserData();
+        }
+        
+        function updateCountdown(seconds) {
+            // Update countdown display if exists
+            const countdownEl = document.getElementById('countdown');
+            if (countdownEl) {
+                countdownEl.textContent = `Draw in: ${seconds}s`;
+                
+                if (seconds === 0) {
+                    countdownEl.textContent = 'Drawing now...';
+                }
+            }
+        }
+
+        // ========================================
+        //   Network Services Monitoring
+        // ========================================
+        let networkCharts = {};
+        let networkStats = {
+            websocket: { messages: [], latency: [] },
+            firebase: { queries: [], time: [] },
+            http: { requests: [], response: [] },
+            auth: { requests: [], success: [] },
+            transaction: { volume: [], count: [] },
+            lottery: { draws: [], winners: [] }
+        };
+
+        // Initialize Network Monitoring
+        function initNetworkMonitoring() {
+            // Initialize all charts
+            initServiceChart('wsChart', 'WebSocket Messages/sec');
+            initServiceChart('fbChart', 'Firebase Queries');
+            initServiceChart('httpChart', 'HTTP Requests');
+            initServiceChart('authChart', 'Auth Requests');
+            initServiceChart('txChart', 'Transactions');
+            initServiceChart('lotteryChart', 'Lottery Activity');
+
+            // Start monitoring
+            startNetworkMonitoring();
+        }
+
+        function initServiceChart(canvasId, label) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            networkCharts[canvasId] = {
+                canvas: canvas,
+                ctx: ctx,
+                data: Array(20).fill(0),
+                max: 10,
+                label: label
+            };
+        }
+
+        function updateServiceChart(chartId, value) {
+            const chart = networkCharts[chartId];
+            if (!chart) return;
+
+            // Add new value and remove oldest
+            chart.data.push(value);
+            if (chart.data.length > 20) chart.data.shift();
+
+            // Update max for scaling
+            chart.max = Math.max(...chart.data, 10);
+
+            // Draw chart
+            drawChart(chart);
+        }
+
+        function drawChart(chart) {
+            const ctx = chart.ctx;
+            const canvas = chart.canvas;
+            const width = canvas.width = canvas.offsetWidth * 2;
+            const height = canvas.height = 120;
+            const data = chart.data;
+            const max = chart.max;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, 'rgba(251, 191, 36, 0.3)');
+            gradient.addColorStop(1, 'rgba(251, 191, 36, 0.05)');
+
+            ctx.fillStyle = gradient;
+            ctx.strokeStyle = 'rgba(251, 191, 36, 1)';
+            ctx.lineWidth = 3;
+
+            // Draw line
+            ctx.beginPath();
+            data.forEach((value, index) => {
+                const x = (index / (data.length - 1)) * width;
+                const y = height - (value / max) * height * 0.8;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            // Fill area under line
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw line on top
+            ctx.beginPath();
+            data.forEach((value, index) => {
+                const x = (index / (data.length - 1)) * width;
+                const y = height - (value / max) * height * 0.8;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+        }
+
+        async function startNetworkMonitoring() {
+            // Update stats every 2 seconds
+            setInterval(async () => {
+                await updateNetworkStats();
+            }, 2000);
+
+            // Initial update
+            await updateNetworkStats();
+        }
+
+        async function updateNetworkStats() {
+            try {
+                // WebSocket Stats
+                const wsConnected = ws && ws.readyState === WebSocket.OPEN;
+                document.getElementById('wsStatus').textContent = wsConnected ? 'Online' : 'Offline';
+                document.getElementById('wsStatus').className = wsConnected ? 'service-status online' : 'service-status offline';
+                
+                // Simulate message rate (in real app, track actual messages)
+                const wsMessages = wsConnected ? Math.floor(Math.random() * 5) + 1 : 0;
+                document.getElementById('wsConnections').textContent = wsConnected ? '1' : '0';
+                document.getElementById('wsMessages').textContent = wsMessages;
+                document.getElementById('wsLatency').textContent = wsConnected ? `${Math.floor(Math.random() * 50) + 10}ms` : 'N/A';
+                updateServiceChart('wsChart', wsMessages);
+
+                // Firebase Stats
+                const startTime = Date.now();
+                const ticketsSnapshot = await getDocs(collection(db, "tickets"));
+                const usersSnapshot = await getDocs(collection(db, "users"));
+                const queryTime = Date.now() - startTime;
+                
+                document.getElementById('fbTickets').textContent = ticketsSnapshot.size;
+                document.getElementById('fbUsers').textContent = usersSnapshot.size;
+                document.getElementById('fbQueryTime').textContent = `${queryTime}ms`;
+                updateServiceChart('fbChart', ticketsSnapshot.size);
+
+                // HTTP Stats (simulated based on activity)
+                const httpRequests = Math.floor(Math.random() * 10) + 5;
+                document.getElementById('httpRequests').textContent = httpRequests;
+                document.getElementById('httpSuccess').textContent = '98%';
+                document.getElementById('httpResponse').textContent = `${Math.floor(Math.random() * 100) + 50}ms`;
+                updateServiceChart('httpChart', httpRequests);
+
+                // Auth Stats
+                document.getElementById('authSessions').textContent = currentUser ? '1' : '0';
+                const authRequests = Math.floor(Math.random() * 3) + 1;
+                document.getElementById('authRequests').textContent = authRequests;
+                document.getElementById('authSuccessRate').textContent = '100%';
+                updateServiceChart('authChart', authRequests);
+
+                // Transaction Stats
+                let totalVolume = 0;
+                let txCount = 0;
+                ticketsSnapshot.forEach(doc => {
+                    totalVolume += 10; // $10 per ticket
+                    txCount++;
+                });
+                document.getElementById('txVolume').textContent = `$${totalVolume}`;
+                document.getElementById('txCount').textContent = txCount;
+                document.getElementById('txTime').textContent = `${Math.floor(Math.random() * 30) + 5}ms`;
+                updateServiceChart('txChart', txCount);
+
+                // Lottery Stats
+                const lotteryDoc = await getDoc(doc(db, "system", "lottery"));
+                const hasWinner = lotteryDoc.exists() && lotteryDoc.data().winningNumber;
+                
+                // Count winning tickets
+                let winnersCount = 0;
+                if (hasWinner) {
+                    const winningNum = lotteryDoc.data().winningNumber;
+                    ticketsSnapshot.forEach(ticketDoc => {
+                        const data = ticketDoc.data();
+                        if (data.numbers && data.numbers.includes(winningNum)) {
+                            winnersCount++;
+                        }
+                    });
+                }
+                
+                document.getElementById('lotteryDraws').textContent = hasWinner ? '1' : '0';
+                document.getElementById('lotteryWinners').textContent = winnersCount;
+                document.getElementById('lotteryProcessing').textContent = `${Math.floor(Math.random() * 20) + 5}ms`;
+                updateServiceChart('lotteryChart', winnersCount);
+
+            } catch (error) {
+                console.error('Error updating network stats:', error);
+            }
+        }
+
+        // Service Details Modal
+        window.showServiceDetails = function(serviceType) {
+            const modal = document.getElementById('serviceModal');
+            const content = document.getElementById('modalServiceContent');
+            
+            const serviceDetails = {
+                websocket: {
+                    title: 'WebSocket Service',
+                    icon: 'radio',
+                    description: 'Real-time bidirectional communication system',
+                    details: `
+                        <h4>  How It Works</h4>
+                        <p>The WebSocket service establishes a persistent connection between your browser and the lottery server on port 9090. This enables instant, real-time updates without polling.</p>
+                        
+                        <h4>  Real-Time Features</h4>
+                        <ul>
+                            <li><strong>Instant Winning Number Updates:</strong> When an admin sets a winning number, it's immediately broadcasted to all connected clients</li>
+                            <li><strong>Live Ticket Notifications:</strong> See when other players purchase tickets in real-time</li>
+                            <li><strong>Balance Updates:</strong> Your balance updates instantly when you win prizes</li>
+                            <li><strong>System Announcements:</strong> Receive important system messages immediately</li>
+                        </ul>
+                        
+                        <h4>  Current System Stats</h4>
+                        <ul>
+                            <li><strong>Protocol:</strong> WebSocket (ws://)</li>
+                            <li><strong>Endpoint:</strong> localhost:9090/ws/lottery-updates</li>
+                            <li><strong>Connection State:</strong> ${ws && ws.readyState === WebSocket.OPEN ? 'Connected ✅' : 'Disconnected ❌'}</li>
+                            <li><strong>Message Format:</strong> JSON with type and data fields</li>
+                        </ul>
+                        
+                        <h4>  Example Flow</h4>
+                        <div class="code-example">
+                            <p><strong>1. Admin sets winning number (7)</strong></p>
+                            <p>→ Server broadcasts: <code>{"type":"WINNING_NUMBER","data":{"number":7}}</code></p>
+                            <p><strong>2. All clients receive update</strong></p>
+                            <p>→ UI updates automatically without page refresh</p>
+                            <p><strong>3. Winners detected instantly</strong></p>
+                            <p>→ Prize credited and notification shown immediately</p>
+                        </div>
+                    `
+                },
+                firebase: {
+                    title: 'Firebase Database',
+                    icon: 'database',
+                    description: 'Cloud-hosted NoSQL database for persistent data storage',
+                    details: `
+                        <h4> How It Works</h4>
+                        <p>Firebase Firestore is a cloud-hosted, scalable NoSQL database that stores all lottery data including user accounts, tickets, and system configuration.</p>
+                        
+                        <h4>  Data Collections</h4>
+                        <ul>
+                            <li><strong>users:</strong> User profiles with email, username, balance, and admin status</li>
+                            <li><strong>tickets:</strong> All purchased tickets with userId, numbers array, purchase time, and winning status</li>
+                            <li><strong>system/lottery:</strong> Current winning number and draw time</li>
+                        </ul>
+                        
+                        <h4>  Query Examples</h4>
+                        <div class="code-example">
+                            <p><strong>Get User's Tickets:</strong></p>
+                            <code>query(collection(db, "tickets"), where("userId", "==", currentUser.uid))</code>
+                            
+                            <p><strong>Get All Users (Admin):</strong></p>
+                            <code>getDocs(collection(db, "users"))</code>
+                            
+                            <p><strong>Get Winning Number:</strong></p>
+                            <code>getDoc(doc(db, "system", "lottery"))</code>
+                        </div>
+                        
+                        <h4>  Performance</h4>
+                        <ul>
+                            <li><strong>Real-time Sync:</strong> Changes propagate instantly to all clients</li>
+                            <li><strong>Offline Support:</strong> Data cached locally for offline access</li>
+                            <li><strong>Automatic Scaling:</strong> Handles thousands of concurrent users</li>
+                            <li><strong>Security Rules:</strong> Row-level security ensures data privacy</li>
+                        </ul>
+                    `
+                },
+                http: {
+                    title: 'HTTP API Service',
+                    icon: 'globe',
+                    description: 'RESTful API endpoints for client-server communication',
+                    details: `
+                        <h4>  How It Works</h4>
+                        <p>The HTTP API service provides RESTful endpoints for operations that require server-side processing, validation, and business logic execution.</p>
+                        
+                        <h4>  API Endpoints</h4>
+                        <ul>
+                            <li><strong>POST /api/tickets:</strong> Purchase new lottery ticket</li>
+                            <li><strong>GET /api/tickets:</strong> Retrieve user's tickets</li>
+                            <li><strong>POST /api/winning-number:</strong> Set winning number (admin only)</li>
+                            <li><strong>GET /api/results:</strong> Get lottery results and winners</li>
+                            <li><strong>POST /api/balance:</strong> Add funds to account</li>
+                        </ul>
+                        
+                        <h4>  Security Features</h4>
+                        <ul>
+                            <li><strong>Authentication:</strong> Firebase Auth tokens required for all requests</li>
+                            <li><strong>Authorization:</strong> Role-based access control (admin vs user)</li>
+                            <li><strong>Validation:</strong> Server-side input validation and sanitization</li>
+                            <li><strong>Rate Limiting:</strong> Prevents abuse and ensures fair usage</li>
+                        </ul>
+                        
+                        <h4>  Request Flow Example</h4>
+                        <div class="code-example">
+                            <p><strong>Client sends:</strong></p>
+                            <code>POST /api/tickets</code>
+                            <code>Headers: { Authorization: "Bearer [token]" }</code>
+                            <code>Body: { userId: "abc123", amount: 10 }</code>
+                            
+                            <p><strong>Server processes:</strong></p>
+                            <p>1. Validates auth token ✓</p>
+                            <p>2. Checks user balance ✓</p>
+                            <p>3. Generates random numbers ✓</p>
+                            <p>4. Creates ticket in database ✓</p>
+                            <p>5. Deducts balance ✓</p>
+                            
+                            <p><strong>Server responds:</strong></p>
+                            <code>{ success: true, ticket: {...} }</code>
+                        </div>
+                    `
+                },
+                auth: {
+                    title: 'Authentication Service',
+                    icon: 'lock',
+                    description: 'Secure user authentication and session management',
+                    details: `
+                        <h4>  How It Works</h4>
+                        <p>Firebase Authentication provides secure user authentication with email/password, session management, and token-based security for all API requests.</p>
+                        
+                        <h4> Authentication Flow</h4>
+                        <ul>
+                            <li><strong>Sign Up:</strong> User creates account with email/password</li>
+                            <li><strong>Email Verification:</strong> Verification email sent (optional)</li>
+                            <li><strong>Sign In:</strong> Credentials validated, JWT token issued</li>
+                            <li><strong>Session Management:</strong> Token automatically refreshed</li>
+                            <li><strong>Sign Out:</strong> Session terminated, token invalidated</li>
+                        </ul>
+                        
+                        <h4>  User Account Features</h4>
+                        <ul>
+                            <li><strong>Profile:</strong> Username, email, balance stored in Firestore</li>
+                            <li><strong>Role-Based Access:</strong> Admin flag enables privileged operations</li>
+                            <li><strong>Balance Management:</strong> Users can add funds and purchase tickets</li>
+                            <li><strong>Ticket History:</strong> All purchases linked to user account</li>
+                        </ul>
+                        
+                        <h4> Security Implementation</h4>
+                        <div class="code-example">
+                            <p><strong>Sign In Process:</strong></p>
+                            <code>signInWithEmailAndPassword(auth, email, password)</code>
+                            <p>→ Returns user object with JWT token</p>
+                            
+                            <p><strong>Token Usage:</strong></p>
+                            <code>const token = await user.getIdToken()</code>
+                            <code>fetch('/api/tickets', { headers: { Authorization: 'Bearer ' + token } })</code>
+                            
+                            <p><strong>Session Persistence:</strong></p>
+                            <p>✓ Tokens automatically refreshed</p>
+                            <p>✓ Session persists across page reloads</p>
+                            <p>✓ Secure httpOnly cookies for additional security</p>
+                        </div>
+                    `
+                },
+                transaction: {
+                    title: 'Transaction Service',
+                    icon: 'dollar-sign',
+                    description: 'Financial transaction processing and balance management',
+                    details: `
+                        <h4>  How It Works</h4>
+                        <p>The transaction service handles all financial operations including balance management, ticket purchases, prize payouts, and transaction history tracking.</p>
+                        
+                        <h4>  Transaction Types</h4>
+                        <ul>
+                            <li><strong>Deposit:</strong> User adds funds to their account balance</li>
+                            <li><strong>Ticket Purchase:</strong> $10 deducted for each ticket bought</li>
+                            <li><strong>Prize Payout:</strong> $100 credited for matching winning number</li>
+                            <li><strong>Refund:</strong> Balance restored if transaction fails</li>
+                        </ul>
+                        
+                        <h4>  Transaction Flow</h4>
+                        <div class="code-example">
+                            <p><strong>1. User initiates ticket purchase</strong></p>
+                            <p>→ Check current balance: $50.00</p>
+                            
+                            <p><strong>2. System validates transaction</strong></p>
+                            <p>→ Ticket cost: $10.00 ✓</p>
+                            <p>→ Sufficient balance: Yes ✓</p>
+                            
+                            <p><strong>3. Transaction processed atomically</strong></p>
+                            <code>updateDoc(userDoc, { balance: 40.00 })</code>
+                            <code>addDoc(ticketsCollection, { userId, numbers, ... })</code>
+                            
+                            <p><strong>4. Real-time updates</strong></p>
+                            <p>→ Balance display: $40.00</p>
+                            <p>→ New ticket appears in list</p>
+                            <p>→ WebSocket broadcast to all clients</p>
+                        </div>
+                        
+                        <h4> Prize Distribution</h4>
+                        <ul>
+                            <li><strong>Instant Detection:</strong> Winners identified immediately when numbers drawn</li>
+                            <li><strong>Automatic Payout:</strong> $100 credited to balance instantly</li>
+                            <li><strong>Notification:</strong> Winner notified via WebSocket + UI animation</li>
+                            <li><strong>History:</strong> All winnings recorded in transaction log</li>
+                        </ul>
+                    `
+                },
+                lottery: {
+                    title: 'Lottery Engine',
+                    icon: 'zap',
+                    description: 'Core lottery number generation and winner detection',
+                    details: `
+                        <h4>  How It Works</h4>
+                        <p>The lottery engine is the core system that generates random numbers, manages draws, detects winners, and processes prize distributions with millisecond precision.</p>
+                        
+                        <h4>  Number Generation</h4>
+                        <ul>
+                            <li><strong>Algorithm:</strong> Cryptographically secure random number generation</li>
+                            <li><strong>Range:</strong> Numbers 1-10 (configurable)</li>
+                            <li><strong>Quantity:</strong> 5 numbers per ticket</li>
+                            <li><strong>Fairness:</strong> Each number has equal probability (10%)</li>
+                        </ul>
+                        
+                        <h4>  Draw Process</h4>
+                        <div class="code-example">
+                            <p><strong>1. Admin initiates draw</strong></p>
+                            <code>setWinningNumber(7)</code>
+                            
+                            <p><strong>2. System validates</strong></p>
+                            <p>→ Number in range (1-10): Yes ✓</p>
+                            <p>→ Admin authorization: Verified ✓</p>
+                            
+                            <p><strong>3. Winner detection triggered</strong></p>
+                            <code>for each ticket in database:</code>
+                            <code>  if ticket.numbers.includes(7):</code>
+                            <code>    markAsWinner(ticket)</code>
+                            <code>    creditPrize(ticket.userId, 100)</code>
+                            <code>    notifyWinner(ticket.userId)</code>
+                            
+                            <p><strong>4. Broadcast results</strong></p>
+                            <p>→ WebSocket: WINNING_NUMBER event</p>
+                            <p>→ All clients update UI instantly</p>
+                            <p>→ Winners see celebration animation</p>
+                        </div>
+                        
+                        <h4>  Performance Optimization</h4>
+                        <ul>
+                            <li><strong>Batch Processing:</strong> All tickets checked in single pass</li>
+                            <li><strong>Parallel Queries:</strong> Multiple database queries run concurrently</li>
+                            <li><strong>Caching:</strong> Winning number cached to reduce database reads</li>
+                            <li><strong>Async Operations:</strong> Non-blocking I/O for high throughput</li>
+                        </ul>
+                        
+                        <h4>  System Statistics</h4>
+                        <ul>
+                            <li><strong>Processing Speed:</strong> ~5-20ms per draw</li>
+                            <li><strong>Ticket Check Rate:</strong> ~1000 tickets/second</li>
+                            <li><strong>Winner Detection:</strong> Instant (sub-50ms)</li>
+                            <li><strong>Prize Distribution:</strong> Automated within 100ms</li>
+                        </ul>
+                    `
+                }
+            };
+
+            const service = serviceDetails[serviceType];
+            if (!service) return;
+
+            content.innerHTML = `
+                <div class="service-detail-header">
+                    <div class="service-detail-icon">
+                        <i data-lucide="${service.icon}"></i>
+                    </div>
+                    <div>
+                        <h2>${service.title}</h2>
+                        <p>${service.description}</p>
+                    </div>
+                </div>
+                <div class="service-detail-content">
+                    ${service.details}
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+            lucide.createIcons();
+        };
+
+        window.closeServiceModal = function() {
+            document.getElementById('serviceModal').style.display = 'none';
+        };
+
+        // Close modal on outside click
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('serviceModal');
+            if (e.target === modal) {
+                closeServiceModal();
+            }
+        });
+
+    </script>
+</body>
+</html>

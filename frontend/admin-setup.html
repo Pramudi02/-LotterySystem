@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup - Lottery System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .setup-container {
+            max-width: 500px;
+            width: 100%;
+            background: #1e1e1e;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .info {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid #ff6b35;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+        }
+
+        .info h3 {
+            margin-bottom: 0.5rem;
+            color: #ff6b35;
+        }
+
+        .info ol {
+            margin-left: 1.5rem;
+        }
+
+        .info li {
+            margin: 0.5rem 0;
+            color: #cbd5e1;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid #10b981;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            display: block;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #ff6b35;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            color: #f7931e;
+        }
+
+        .current-user {
+            background: rgba(255, 107, 53, 0.05);
+            border: 1px solid #ff6b35;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .current-user p {
+            margin: 0.25rem 0;
+            color: #cbd5e1;
+        }
+
+        .current-user strong {
+            color: #ff6b35;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <h1>Admin Setup</h1>
+
+        <div class="info">
+            <h3>How to Make a User Admin:</h3>
+            <ol>
+                <li>Sign in with the account you want to make admin</li>
+                <li>Come to this page while signed in</li>
+                <li>Click "Make Me Admin" button</li>
+                <li>Refresh the main app to see admin features</li>
+            </ol>
+        </div>
+
+        <div id="currentUser" class="current-user" style="display: none;">
+            <p><strong>Current User:</strong> <span id="userEmail"></span></p>
+            <p><strong>Status:</strong> <span id="userStatus"></span></p>
+        </div>
+
+        <div id="notSignedIn" style="display: none;">
+            <p style="text-align: center; color: #6c757d; margin-bottom: 1rem;">
+                Please sign in first to make your account an admin.
+            </p>
+        </div>
+
+        <button id="makeAdminBtn" class="btn" onclick="makeAdmin()" style="display: none;">
+            Make Me Admin
+        </button>
+
+        <div id="message" class="message"></div>
+
+        <a href="modern-app.html" class="back-link">Back to Lottery System</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWEtzjum1mcPN3e61XghXaNC9qum7vhDw",
+            authDomain: "lotterysystem-18963.firebaseapp.com",
+            projectId: "lotterysystem-18963",
+            storageBucket: "lotterysystem-18963.firebasestorage.app",
+            messagingSenderId: "41637006495",
+            appId: "1:41637006495:web:e7c9e6e3a57792bbc126aa",
+            measurementId: "G-HKLLXJNVHS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        // Check auth state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('notSignedIn').style.display = 'none';
+                document.getElementById('currentUser').style.display = 'block';
+                document.getElementById('makeAdminBtn').style.display = 'block';
+
+                document.getElementById('userEmail').textContent = user.email;
+
+                // Check if already admin
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const isAdmin = userDoc.data().isAdmin || false;
+                    document.getElementById('userStatus').textContent = 
+                        isAdmin ? 'Already Admin' : 'Regular User';
+                    
+                    if (isAdmin) {
+                        document.getElementById('makeAdminBtn').textContent = 'Already Admin';
+                        document.getElementById('makeAdminBtn').disabled = true;
+                    }
+                }
+            } else {
+                currentUser = null;
+                document.getElementById('notSignedIn').style.display = 'block';
+                document.getElementById('currentUser').style.display = 'none';
+                document.getElementById('makeAdminBtn').style.display = 'none';
+            }
+        });
+
+        // Make current user admin
+        window.makeAdmin = async function() {
+            if (!currentUser) {
+                showMessage('Please sign in first', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('makeAdminBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                // Update user document
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    isAdmin: true
+                });
+
+                showMessage('Success! You are now an admin. Refresh the main app to see admin features.', 'success');
+                document.getElementById('userStatus').textContent = 'Admin';
+                btn.textContent = 'Already Admin';
+
+            } catch (error) {
+                console.error("Error making admin:", error);
+                showMessage('Error: ' + error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Make Me Admin';
+            }
+        };
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${type}`;
+        }
+    </script>
+</body>
+</html>
