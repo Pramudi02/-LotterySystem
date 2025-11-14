@@ -2364,6 +2364,26 @@ tbody tr:last-child td {
     }
 }
 
+@keyframes stat-pulse {
+    0% {
+        transform: scale(1);
+        color: inherit;
+    }
+    50% {
+        transform: scale(1.15);
+        color: #ff6b35;
+        text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        color: inherit;
+    }
+}
+
+.stat-pulse {
+    animation: stat-pulse 0.5s ease-in-out;
+}
+
 /* Responsive Updates */
 @media (max-width: 768px) {
     .live-stats-section {

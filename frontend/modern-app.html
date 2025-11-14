@@ -383,6 +383,26 @@
 
                     <div class="admin-card">
                         <div class="admin-card-header">
+                            <i data-lucide="dollar-sign"></i>
+                            <h3>Set Jackpot Amount</h3>
+                        </div>
+                        <div class="winner-form">
+                            <div class="winner-input-group">
+                                <input type="number" id="jackpotAmountInput" min="0" step="0.01" placeholder="Enter jackpot amount ($)">
+                                <button class="btn-set-winner" onclick="setJackpotAmount()">
+                                    <i data-lucide="check"></i>
+                                    <span>Set Jackpot</span>
+                                </button>
+                            </div>
+                            <div style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.875rem;">
+                                <i data-lucide="info" style="width: 14px; height: 14px;"></i>
+                                Current Jackpot: <span id="currentJackpotDisplay">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
                             <i data-lucide="award"></i>
                             <h3>Winning Tickets Only</h3>
                         </div>
@@ -638,7 +658,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, orderBy, Timestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBWEtzjum1mcPN3e61XghXaNC9qum7vhDw",
@@ -673,6 +693,9 @@
                 
                 // 🔴 Connect to WebSocket for live updates
                 connectWebSocket();
+                
+                // 🔴 Listen for real-time Firebase updates
+                setupFirebaseListeners();
             } else {
                 currentUser = null;
                 currentUserData = null;
@@ -1147,6 +1170,45 @@
             }
         };
 
+        // Admin: Set Jackpot Amount
+        window.setJackpotAmount = async function() {
+            if (!currentUserData?.isAdmin) {
+                showToast("❌ Admin access required", "error");
+                return;
+            }
+
+            const input = document.getElementById('jackpotAmountInput');
+            const amount = parseFloat(input.value);
+
+            if (isNaN(amount) || amount < 0) {
+                showToast('❌ Please enter a valid amount (0 or greater)', 'error');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                // Save jackpot to Firebase
+                await setDoc(doc(db, "system", "lottery"), {
+                    jackpot: amount,
+                    jackpotSetTime: Timestamp.now(),
+                    jackpotSetBy: currentUser.uid
+                }, { merge: true });
+
+                // Update display
+                document.getElementById('currentJackpotDisplay').textContent = `$${amount.toFixed(2)}`;
+                document.getElementById('liveJackpot').textContent = `$${amount.toFixed(2)}`;
+
+                showToast(`💰 Jackpot set to $${amount.toFixed(2)}`, 'success');
+                input.value = '';
+
+            } catch (error) {
+                console.error("Error setting jackpot:", error);
+                showToast('❌ Error setting jackpot amount', 'error');
+            } finally {
+                showLoading(false);
+            }
+        };
+
         // Admin: Load Winning Tickets Only
         window.loadWinningTickets = async function() {
             if (!currentUserData?.isAdmin) return;
@@ -1491,15 +1553,48 @@
                     break;
                     
                 case 'TICKET_COUNT':
-                    // Update live ticket count
-                    document.getElementById('liveTicketCount').textContent = data.total;
+                    // Update live ticket count - real-time update
+                    const liveTicketEl = document.getElementById('liveTicketCount');
+                    if (liveTicketEl) {
+                        liveTicketEl.textContent = data.total;
+                        liveTicketEl.classList.add('stat-pulse');
+                        setTimeout(() => liveTicketEl.classList.remove('stat-pulse'), 500);
+                    }
+                    // Also update dashboard total tickets display
+                    const dashTicketEl = document.getElementById('dashboardTotalTickets');
+                    if (dashTicketEl) {
+                        dashTicketEl.textContent = data.total;
+                    }
+                    console.log('🎫 Live ticket count updated:', data.total);
                     break;
                     
                 case 'LIVE_STATS':
-                    // Update all live statistics
-                    document.getElementById('liveActiveUsers').textContent = data.activeUsers;
-                    document.getElementById('liveTicketCount').textContent = data.totalTickets;
-                    document.getElementById('liveJackpot').textContent = `$${data.jackpot.toFixed(2)}`;
+                    // Update all live statistics - comprehensive real-time update
+                    const activeUsersEl = document.getElementById('liveActiveUsers');
+                    const totalTicketsEl = document.getElementById('liveTicketCount');
+                    const jackpotEl = document.getElementById('liveJackpot');
+                    
+                    if (activeUsersEl) {
+                        activeUsersEl.textContent = data.activeUsers;
+                    }
+                    if (totalTicketsEl) {
+                        totalTicketsEl.textContent = data.totalTickets;
+                        totalTicketsEl.classList.add('stat-pulse');
+                        setTimeout(() => totalTicketsEl.classList.remove('stat-pulse'), 500);
+                    }
+                    if (jackpotEl) {
+                        jackpotEl.textContent = `$${data.jackpot.toFixed(2)}`;
+                        jackpotEl.classList.add('stat-pulse');
+                        setTimeout(() => jackpotEl.classList.remove('stat-pulse'), 500);
+                    }
+                    
+                    // Update admin jackpot display if on admin page
+                    const adminJackpotDisplay = document.getElementById('currentJackpotDisplay');
+                    if (adminJackpotDisplay) {
+                        adminJackpotDisplay.textContent = `$${data.jackpot.toFixed(2)}`;
+                    }
+                    
+                    console.log('📊 Live stats updated:', data);
                     break;
                     
                 case 'TICKET_PURCHASED':
@@ -1604,6 +1699,116 @@
                     countdownEl.textContent = 'Drawing now...';
                 }
             }
+        }
+
+        // ========================================
+        //   Firebase Real-Time Listeners
+        // ========================================
+        
+        function setupFirebaseListeners() {
+            console.log('🔥 Setting up Firebase real-time listeners...');
+            
+            // Listen to lottery system document for jackpot changes
+            const lotteryDocRef = doc(db, 'system', 'lottery');
+            onSnapshot(lotteryDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    console.log('🔥 Firebase: Lottery system updated', data);
+                    
+                    // Update jackpot displays
+                    if (data.jackpot !== undefined) {
+                        const liveJackpotEl = document.getElementById('liveJackpot');
+                        const currentJackpotDisplayEl = document.getElementById('currentJackpotDisplay');
+                        
+                        if (liveJackpotEl) {
+                            liveJackpotEl.textContent = `$${data.jackpot.toFixed(2)}`;
+                            liveJackpotEl.classList.add('stat-pulse');
+                            setTimeout(() => liveJackpotEl.classList.remove('stat-pulse'), 500);
+                        }
+                        
+                        if (currentJackpotDisplayEl) {
+                            currentJackpotDisplayEl.textContent = `$${data.jackpot.toFixed(2)}`;
+                        }
+                    }
+                    
+                    // Update winning number if exists
+                    if (data.winningNumber !== undefined && data.winningNumber > 0) {
+                        const winningNumberDisplayEl = document.getElementById('winningNumberDisplay');
+                        if (winningNumberDisplayEl) {
+                            winningNumberDisplayEl.textContent = data.winningNumber;
+                            winningNumberDisplayEl.style.display = 'inline-flex';
+                        }
+                        
+                        // Update admin winning number
+                        const adminWinningCircle = document.querySelector('#adminCurrentWinningNumber .admin-winning-circle');
+                        if (adminWinningCircle) {
+                            adminWinningCircle.textContent = data.winningNumber;
+                            adminWinningCircle.classList.add('has-winner');
+                        }
+                    }
+                }
+            }, (error) => {
+                console.error('❌ Firebase listener error (lottery):', error);
+            });
+            
+            // Listen to tickets collection for total count changes
+            const ticketsQuery = query(collection(db, 'tickets'));
+            onSnapshot(ticketsQuery, (snapshot) => {
+                const totalTickets = snapshot.size;
+                console.log(`🔥 Firebase: Tickets collection updated - ${totalTickets} total tickets`);
+                
+                // Update live ticket count
+                const liveTicketEl = document.getElementById('liveTicketCount');
+                if (liveTicketEl) {
+                    liveTicketEl.textContent = totalTickets;
+                    liveTicketEl.classList.add('stat-pulse');
+                    setTimeout(() => liveTicketEl.classList.remove('stat-pulse'), 500);
+                }
+                
+                // Calculate ticket distribution by number
+                const ticketCounts = {};
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const num = data.number;
+                    ticketCounts[num] = (ticketCounts[num] || 0) + 1;
+                });
+                
+                // Update admin stats table
+                updateAdminStatsTable(ticketCounts);
+                
+            }, (error) => {
+                console.error('❌ Firebase listener error (tickets):', error);
+            });
+            
+            console.log('✅ Firebase listeners active');
+        }
+        
+        function updateAdminStatsTable(ticketCounts) {
+            // Log ticket distribution for admin monitoring
+            console.log('📊 Ticket Distribution:', ticketCounts);
+            console.log('📊 Total unique numbers:', Object.keys(ticketCounts).length);
+            
+            // Optional: Update admin stats table if it exists
+            const statsTableBody = document.getElementById('statsTableBody');
+            if (!statsTableBody) return;
+            
+            // Clear existing rows
+            statsTableBody.innerHTML = '';
+            
+            // Sort by number
+            const numbers = Object.keys(ticketCounts).sort((a, b) => a - b);
+            
+            // Add rows
+            numbers.forEach((number) => {
+                const count = ticketCounts[number];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${number}</td>
+                    <td>${count}</td>
+                    <td>${((count / Object.values(ticketCounts).reduce((a, b) => a + b, 0)) * 100).toFixed(1)}%</td>
+                `;
+                statsTableBody.appendChild(row);
+            });
         }
 
         // ========================================
